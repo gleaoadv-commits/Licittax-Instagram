@@ -115,6 +115,16 @@ def test_base_legal_sem_repeticao():
     assert d.base_legal() == "Lei 14.133/2021, art. 55; LC 123/2006, art. 48"
 
 
+def test_base_legal_prefixo_e_dispositivo():
+    d = dica(afirmacoes=(
+        Afirmacao("a", Citacao("Lei 14.133/2021", "87")),
+        Afirmacao("b", Citacao("Lei 14.133/2021", "Art. 75", "inciso II")),
+        Afirmacao("c", Citacao("LC 123/2006", "art. 48")),
+        Afirmacao("d", Citacao("Lei 14.133/2021", "87"))))
+    assert d.base_legal() == ("Lei 14.133/2021, art. 87; Lei 14.133/2021, Art. 75, inciso II; "
+                              "LC 123/2006, art. 48")
+
+
 def test_descarta_quando_cobertura_nega():
     r = checar_dica(dica(), texto_ok, sim, verificar_texto=cob_nao)
     assert r.status == "descartada" and "não coberto" in r.motivo

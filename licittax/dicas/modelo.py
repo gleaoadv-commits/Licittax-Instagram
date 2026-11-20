@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 
@@ -41,7 +42,11 @@ class Dica:
         for a in self.afirmacoes:
             if a.citacao is None:
                 continue
-            item = f"{a.citacao.norma}, {a.citacao.artigo}"
+            c = a.citacao
+            artigo = c.artigo.strip()
+            if artigo and not re.match(r"art(\.|igo|s\.?)?\s", artigo, re.IGNORECASE):
+                artigo = f"art. {artigo}"
+            item = ", ".join(p for p in (c.norma, artigo, c.dispositivo.strip()) if p)
             if item not in vistos:
                 vistos.append(item)
         return "; ".join(vistos)
