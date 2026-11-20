@@ -1,0 +1,815 @@
+{
+  "dicas": [
+    {
+      "id": "t1-01",
+      "trilha": 1,
+      "titulo": "O que é licitação e por que ela é para você",
+      "slides": [
+        {
+          "titulo": "Licitação, em poucas palavras",
+          "itens": [
+            "É o processo que o poder público usa para comprar e contratar",
+            "Vale para União, estados, DF e municípios",
+            "A regra geral hoje é a Lei 14.133/2021"
+          ]
+        },
+        {
+          "titulo": "Para que serve",
+          "itens": [
+            "Escolher a proposta mais vantajosa",
+            "Garantir tratamento igual e competição justa",
+            "Evitar sobrepreço e preços inexequíveis",
+            "Incentivar inovação e desenvolvimento sustentável"
+          ]
+        },
+        {
+          "titulo": "As 5 modalidades",
+          "itens": [
+            "Pregão",
+            "Concorrência",
+            "Concurso",
+            "Leilão",
+            "Diálogo competitivo"
+          ]
+        },
+        {
+          "titulo": "O caminho de uma licitação",
+          "itens": [
+            "Preparação e publicação do edital",
+            "Propostas e lances",
+            "Julgamento",
+            "Habilitação (documentos)",
+            "Recursos e homologação"
+          ]
+        },
+        {
+          "titulo": "Seu primeiro passo",
+          "itens": [
+            "Mantenha CNPJ e certidões em dia",
+            "Escolha 1 ou 2 produtos ou serviços para focar",
+            "Leia um edital inteiro antes da primeira disputa"
+          ]
+        }
+      ],
+      "frase_story": "Licitação não é só para empresa grande. Entenda o básico e dê o primeiro passo!",
+      "legenda_base": "Licitação é o caminho oficial para vender ao governo, e a sua ME/EPP pode participar. Neste carrossel você entende para que ela serve, quais são as modalidades e as etapas de uma disputa. Salve para consultar depois e compartilhe com quem quer começar a vender para o setor público.",
+      "afirmacoes": [
+        {
+          "texto": "A Lei 14.133/2021 estabelece normas gerais de licitação e contratação para as administrações públicas da União, dos Estados, do Distrito Federal e dos Municípios.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "1",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "Um dos objetivos da licitação é assegurar a seleção da proposta apta a gerar o resultado de contratação mais vantajoso.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "11",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "A licitação busca assegurar tratamento isonômico entre os licitantes e a justa competição.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "11",
+            "dispositivo": "inciso II",
+            "url": null
+          }
+        },
+        {
+          "texto": "A licitação busca evitar contratações com sobrepreço ou com preços manifestamente inexequíveis e superfaturamento.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "11",
+            "dispositivo": "inciso III",
+            "url": null
+          }
+        },
+        {
+          "texto": "A licitação busca incentivar a inovação e o desenvolvimento nacional sustentável.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "11",
+            "dispositivo": "inciso IV",
+            "url": null
+          }
+        },
+        {
+          "texto": "As modalidades de licitação são pregão, concorrência, concurso, leilão e diálogo competitivo.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "28",
+            "dispositivo": "incisos I a V",
+            "url": null
+          }
+        },
+        {
+          "texto": "O processo de licitação segue as fases preparatória, de divulgação do edital, de apresentação de propostas e lances, de julgamento, de habilitação, recursal e de homologação.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "17",
+            "dispositivo": "incisos I a VII",
+            "url": null
+          }
+        },
+        {
+          "texto": "A fase de habilitação pode anteceder as fases de propostas e julgamento, mediante ato motivado.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "17",
+            "dispositivo": "§ 1º",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacao",
+        "#licitacoes",
+        "#lei14133",
+        "#microempresa",
+        "#empresadepequenoporte",
+        "#MEEPP",
+        "#vendaparaogoverno",
+        "#primeirospassos"
+      ],
+      "status": "descartada",
+      "motivo": "dispositivo não sustenta a afirmação (A Lei 14.133/2021 estabelece normas gerais de licitação e contratação para as administrações públicas da União, dos Estados, do Distrito Federal e dos Municípios.): O caput do art. 1º restringe o alcance às Administrações Públicas diretas, autárquicas e fundacionais da União, dos Estados, do DF e dos Municípios. O § 1º exclui expressamente as empresas públicas, as sociedades de economia mista e suas subsidiárias, ressalvado o art. 178. Ao omitir esse qualificativo, a afirmação fica mais ampla que o texto, pois sugere abranger toda a administração pública, inclusive a indireta empresarial."
+    },
+    {
+      "id": "t1-02",
+      "trilha": 1,
+      "titulo": "Onde achar editais: comece pelo PNCP",
+      "slides": [
+        {
+          "titulo": "O endereço oficial: PNCP",
+          "itens": [
+            "Portal Nacional de Contratações Públicas",
+            "Divulgação centralizada e obrigatória dos atos da Lei 14.133",
+            "O edital e os anexos completos ficam disponíveis lá"
+          ]
+        },
+        {
+          "titulo": "Outros lugares para procurar",
+          "itens": [
+            "Extrato do edital no Diário Oficial",
+            "Jornal diário de grande circulação",
+            "Site oficial do órgão",
+            "Cadastro no órgão para receber avisos diretos"
+          ]
+        },
+        {
+          "titulo": "Compras menores também aparecem",
+          "itens": [
+            "Dispensas por valor devem ter aviso, de preferência, em site oficial",
+            "Prazo mínimo de 3 dias úteis para propostas adicionais",
+            "Ótima porta de entrada para ME/EPP"
+          ]
+        },
+        {
+          "titulo": "Fique de olho nos prazos",
+          "itens": [
+            "Compra de bens por menor preço: mínimo de 8 dias úteis",
+            "Serviços comuns por menor preço: mínimo de 10 dias úteis",
+            "Prazo curto exige busca frequente"
+          ]
+        },
+        {
+          "titulo": "Rotina prática",
+          "itens": [
+            "Filtre por UF, cidade e palavra-chave",
+            "Salve os editais e anote as datas",
+            "Leia objeto, habilitação e prazo de entrega primeiro"
+          ]
+        }
+      ],
+      "frase_story": "Edital não cai do céu: saiba onde procurar e crie sua rotina de busca no PNCP.",
+      "legenda_base": "Não sabe onde encontrar editais? O ponto de partida é o PNCP, o portal oficial que concentra as licitações da Lei 14.133/2021. Veja também onde mais os avisos são publicados e os prazos mínimos que você precisa acompanhar. Salve este post e monte hoje mesmo sua rotina de busca.",
+      "afirmacoes": [
+        {
+          "texto": "O Portal Nacional de Contratações Públicas (PNCP) é o sítio eletrônico oficial destinado à divulgação centralizada e obrigatória dos atos exigidos pela Lei 14.133/2021.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "174",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "A publicidade do edital é feita pela divulgação e manutenção do inteiro teor do edital e de seus anexos no PNCP.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "54",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "É obrigatória a publicação de extrato do edital no Diário Oficial do ente e em jornal diário de grande circulação.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "54",
+            "dispositivo": "§ 1º",
+            "url": null
+          }
+        },
+        {
+          "texto": "É facultada a divulgação adicional do edital em sítio eletrônico oficial do ente, admitida a divulgação direta a interessados cadastrados para esse fim.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "54",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "As contratações diretas por valor serão preferencialmente precedidas de aviso em sítio eletrônico oficial, pelo prazo mínimo de 3 dias úteis, para obter propostas adicionais.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "75",
+            "dispositivo": "§ 3º",
+            "url": null
+          }
+        },
+        {
+          "texto": "Na aquisição de bens com critério de menor preço ou maior desconto, o prazo mínimo para apresentação de propostas é de 8 dias úteis.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "55",
+            "dispositivo": "inciso I, alínea a",
+            "url": null
+          }
+        },
+        {
+          "texto": "Para serviços comuns e obras e serviços comuns de engenharia com critério de menor preço ou maior desconto, o prazo mínimo é de 10 dias úteis.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "55",
+            "dispositivo": "inciso II, alínea a",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacao",
+        "#PNCP",
+        "#editais",
+        "#lei14133",
+        "#microempresa",
+        "#MEEPP",
+        "#vendaparaogoverno",
+        "#primeirospassos"
+      ],
+      "status": "aprovada",
+      "motivo": "ok"
+    },
+    {
+      "id": "t1-03",
+      "trilha": 1,
+      "titulo": "Exclusividade ME/EPP: itens de até R$ 80 mil",
+      "slides": [
+        {
+          "titulo": "Quem é ME e EPP",
+          "itens": [
+            "ME: receita bruta anual de até R$ 360 mil",
+            "EPP: acima de R$ 360 mil até R$ 4,8 milhões"
+          ]
+        },
+        {
+          "titulo": "A regra dos R$ 80 mil",
+          "itens": [
+            "Itens de até R$ 80 mil: disputa só entre ME/EPP",
+            "É um dever do órgão, não um favor",
+            "Empresas maiores ficam de fora desses itens"
+          ]
+        },
+        {
+          "titulo": "Vale na nova lei",
+          "itens": [
+            "A Lei 14.133 manda aplicar os arts. 42 a 49 da LC 123",
+            "No âmbito federal, o Decreto 8.538/2015 repete a regra"
+          ]
+        },
+        {
+          "titulo": "Atenção aos limites",
+          "itens": [
+            "Não vale em item com valor estimado acima do teto da EPP",
+            "Contratos públicos no ano acima do teto tiram o benefício",
+            "Você precisa declarar isso na licitação"
+          ]
+        },
+        {
+          "titulo": "Quando pode não haver exclusividade",
+          "itens": [
+            "Menos de 3 ME/EPP competitivas na região",
+            "Quando não for vantajoso ou prejudicar o objeto"
+          ]
+        },
+        {
+          "titulo": "Na prática",
+          "itens": [
+            "Procure editais e itens marcados como exclusivos ME/EPP",
+            "Confirme se seu enquadramento de porte está atualizado",
+            "Menos concorrentes, mais chances"
+          ]
+        }
+      ],
+      "frase_story": "Item de até R$ 80 mil? A disputa é só entre ME e EPP. Aproveite essa vantagem!",
+      "legenda_base": "Sabia que existem disputas em que só ME e EPP podem participar? Nos itens de até R$ 80 mil, a licitação deve ser exclusiva para pequenos negócios. Veja quem tem direito, os limites e as exceções. Salve e compartilhe com outros empreendedores.",
+      "afirmacoes": [
+        {
+          "texto": "Considera-se microempresa a que aufira, em cada ano-calendário, receita bruta igual ou inferior a R$ 360.000,00.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "3",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Considera-se empresa de pequeno porte a que aufira receita bruta superior a R$ 360.000,00 e igual ou inferior a R$ 4.800.000,00.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "3",
+            "dispositivo": "inciso II",
+            "url": null
+          }
+        },
+        {
+          "texto": "A administração pública deverá realizar processo licitatório destinado exclusivamente à participação de ME e EPP nos itens de contratação cujo valor seja de até R$ 80.000,00.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "48",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Os órgãos e entidades contratantes da administração pública federal deverão realizar processo licitatório exclusivo para ME e EPP nos itens ou lotes de até R$ 80.000,00.",
+          "citacao": {
+            "norma": "Decreto 8.538/2015",
+            "artigo": "6",
+            "dispositivo": "",
+            "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/decreto/d8538.htm"
+          }
+        },
+        {
+          "texto": "Aplicam-se às licitações e contratos da Lei 14.133/2021 as disposições dos arts. 42 a 49 da LC 123/2006.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "Os benefícios não se aplicam, em bens e serviços em geral, ao item cujo valor estimado for superior à receita bruta máxima admitida para enquadramento como EPP.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 1º, inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Os benefícios ficam limitados às ME/EPP que, no ano-calendário da licitação, não tenham celebrado contratos com a Administração cujos valores somados extrapolem a receita bruta máxima da EPP, devendo o órgão exigir declaração nesse sentido.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "O tratamento diferenciado não se aplica quando não houver um mínimo de 3 fornecedores competitivos enquadrados como ME/EPP sediados local ou regionalmente e capazes de cumprir as exigências.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "49",
+            "dispositivo": "inciso II",
+            "url": null
+          }
+        },
+        {
+          "texto": "O tratamento diferenciado não se aplica quando não for vantajoso para a administração ou representar prejuízo ao conjunto ou complexo do objeto.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "49",
+            "dispositivo": "inciso III",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacao",
+        "#exclusivoMEEPP",
+        "#LC123",
+        "#lei14133",
+        "#microempresa",
+        "#empresadepequenoporte",
+        "#vendaparaogoverno",
+        "#primeirospassos"
+      ],
+      "status": "descartada",
+      "motivo": "valor em reais sujeito a atualização por decreto: Os órgãos e entidades contratantes da administração pública federal deverão realizar processo licitatório exclusivo para ME e EPP nos itens ou lotes de até R$ 80.000,00."
+    },
+    {
+      "id": "t1-04",
+      "trilha": 1,
+      "titulo": "Empate ficto: a vantagem que vira o jogo",
+      "slides": [
+        {
+          "titulo": "O que é empate ficto",
+          "itens": [
+            "Não precisa empatar de verdade",
+            "Há empate se a ME/EPP estiver até 10% acima da melhor proposta",
+            "No pregão, o limite é de até 5%"
+          ]
+        },
+        {
+          "titulo": "Como funciona",
+          "itens": [
+            "A ME/EPP mais bem classificada pode cobrir a melhor oferta",
+            "Oferecendo preço menor, o objeto é adjudicado a ela"
+          ]
+        },
+        {
+          "titulo": "No pregão, seja rápido",
+          "itens": [
+            "Prazo máximo de 5 minutos após o fim dos lances",
+            "Perdeu o prazo, perdeu o direito"
+          ]
+        },
+        {
+          "titulo": "Quando não se aplica",
+          "itens": [
+            "Se a melhor oferta inicial já for de ME/EPP",
+            "Se a 1ª ME/EPP não cobrir, chamam-se as demais no intervalo"
+          ]
+        },
+        {
+          "titulo": "Prepare-se antes",
+          "itens": [
+            "Calcule seu preço mínimo antes da sessão",
+            "Fique conectado até o fim dos lances",
+            "Declare corretamente seu porte"
+          ]
+        }
+      ],
+      "frase_story": "Ficou até 5% acima no pregão? Sua ME/EPP ainda pode ganhar com o empate ficto!",
+      "legenda_base": "Perder por pouco nem sempre é perder. Com o empate ficto, a ME/EPP que ficar até 10% acima da melhor proposta (5% no pregão) pode cobrir a oferta e vencer. Entenda as regras e o prazo de 5 minutos no pregão. Salve para lembrar na próxima disputa.",
+      "afirmacoes": [
+        {
+          "texto": "Nas licitações é assegurada, como critério de desempate, preferência de contratação para as ME e EPP.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "44",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "Entende-se por empate as situações em que as propostas das ME/EPP sejam iguais ou até 10% superiores à proposta mais bem classificada.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "44",
+            "dispositivo": "§ 1º",
+            "url": null
+          }
+        },
+        {
+          "texto": "Na modalidade pregão, o intervalo percentual do empate é de até 5% superior ao melhor preço.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "44",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "A ME/EPP mais bem classificada poderá apresentar proposta de preço inferior à considerada vencedora, situação em que o objeto será adjudicado em seu favor.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "45",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Não ocorrendo a contratação da primeira ME/EPP, serão convocadas as remanescentes que estejam no intervalo de empate, na ordem classificatória.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "45",
+            "dispositivo": "inciso II",
+            "url": null
+          }
+        },
+        {
+          "texto": "O empate ficto somente se aplica quando a melhor oferta inicial não tiver sido apresentada por ME/EPP.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "45",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "No pregão, a ME/EPP mais bem classificada será convocada para apresentar nova proposta no prazo máximo de 5 minutos após o encerramento dos lances, sob pena de preclusão.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "45",
+            "dispositivo": "§ 3º",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacao",
+        "#empateficto",
+        "#pregao",
+        "#LC123",
+        "#microempresa",
+        "#MEEPP",
+        "#vendaparaogoverno",
+        "#primeirospassos"
+      ],
+      "status": "aprovada",
+      "motivo": "ok"
+    },
+    {
+      "id": "t1-05",
+      "trilha": 1,
+      "titulo": "Certidão com pendência? Você tem prazo extra",
+      "slides": [
+        {
+          "titulo": "A regra para ME/EPP",
+          "itens": [
+            "Regularidade fiscal e trabalhista só é exigida para assinar o contrato",
+            "Mesmo assim, entregue todas as certidões, ainda que com restrição"
+          ]
+        },
+        {
+          "titulo": "O prazo extra",
+          "itens": [
+            "5 dias úteis para regularizar",
+            "Conta a partir de quando você é declarado vencedor",
+            "Pode ser prorrogado por igual período, a critério da Administração"
+          ]
+        },
+        {
+          "titulo": "O que dá para fazer no prazo",
+          "itens": [
+            "Pagar ou parcelar o débito",
+            "Emitir certidão negativa ou positiva com efeito de negativa"
+          ]
+        },
+        {
+          "titulo": "Cuidado",
+          "itens": [
+            "Não regularizou: perde o direito à contratação",
+            "O órgão pode chamar o próximo ou revogar a licitação",
+            "Sanções cabíveis podem ser aplicadas"
+          ]
+        },
+        {
+          "titulo": "Checklist de certidões",
+          "itens": [
+            "Fazenda federal, estadual e/ou municipal",
+            "Seguridade Social e FGTS",
+            "Justiça do Trabalho",
+            "Tire tudo antes da disputa para evitar surpresas"
+          ]
+        }
+      ],
+      "frase_story": "Ganhou a licitação com certidão pendente? ME/EPP tem 5 dias úteis para regularizar.",
+      "legenda_base": "Uma certidão com pendência não tira sua ME/EPP da disputa. A lei garante prazo extra de 5 dias úteis, prorrogável, para regularizar depois de ser declarada vencedora. Mas atenção: se não regularizar, perde o contrato. Salve este checklist e compartilhe com seu contador.",
+      "afirmacoes": [
+        {
+          "texto": "A comprovação de regularidade fiscal e trabalhista das ME e EPP somente será exigida para efeito de assinatura do contrato.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "42",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "As ME e EPP deverão apresentar toda a documentação exigida para comprovação de regularidade fiscal e trabalhista, mesmo que apresente alguma restrição.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "43",
+            "dispositivo": "",
+            "url": null
+          }
+        },
+        {
+          "texto": "Havendo restrição, é assegurado prazo de 5 dias úteis, contado do momento em que o proponente for declarado vencedor, prorrogável por igual período a critério da administração, para regularização, pagamento ou parcelamento do débito e emissão de certidões negativas ou positivas com efeito de negativa.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "43",
+            "dispositivo": "§ 1º",
+            "url": null
+          }
+        },
+        {
+          "texto": "A não regularização no prazo implica decadência do direito à contratação, sem prejuízo das sanções cabíveis, sendo facultado à Administração convocar os licitantes remanescentes ou revogar a licitação.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "43",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "A habilitação fiscal pode exigir regularidade perante a Fazenda federal, estadual e/ou municipal.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "68",
+            "dispositivo": "inciso III",
+            "url": null
+          }
+        },
+        {
+          "texto": "A habilitação pode exigir regularidade relativa à Seguridade Social e ao FGTS.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "68",
+            "dispositivo": "inciso IV",
+            "url": null
+          }
+        },
+        {
+          "texto": "A habilitação pode exigir regularidade perante a Justiça do Trabalho.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "68",
+            "dispositivo": "inciso V",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacao",
+        "#regularidadefiscal",
+        "#certidoes",
+        "#LC123",
+        "#microempresa",
+        "#MEEPP",
+        "#vendaparaogoverno",
+        "#primeirospassos"
+      ],
+      "status": "descartada",
+      "motivo": "dispositivo não sustenta a afirmação (A comprovação de regularidade fiscal e trabalhista das ME e EPP somente será exigida para efeito de assinatura do contrato.): O art. 42 restringe a regra às licitações públicas: 'Nas licitações públicas, a comprovação de regularidade fiscal e trabalhista das microempresas e das empresas de pequeno porte somente será exigida para efeito de assinatura do contrato'. A afirmação omite esse âmbito e enuncia a regra de forma genérica, sem limitação ao contexto licitatório. Por isso é mais ampla que o texto legal, embora o restante do conteúdo coincida."
+    },
+    {
+      "id": "t1-06",
+      "trilha": 1,
+      "titulo": "Benefícios ME/EPP: confira antes se você se enquadra",
+      "slides": [
+        {
+          "titulo": "Benefício tem regra de entrada",
+          "itens": [
+            "Exclusividade, empate ficto e prazo extra não são automáticos",
+            "Antes de usar, confirme se sua empresa se enquadra",
+            "Uma declaração errada pode virar dor de cabeça"
+          ]
+        },
+        {
+          "titulo": "Quem é ME e quem é EPP",
+          "itens": [
+            "ME: receita bruta anual de até R$ 360 mil",
+            "EPP: acima de R$ 360 mil e até R$ 4,8 milhões",
+            "Confira com seu contador o faturamento do ano"
+          ]
+        },
+        {
+          "titulo": "Atenção à composição societária",
+          "itens": [
+            "Empresa com outra pessoa jurídica no capital não é ME/EPP para a LC 123",
+            "Revise o contrato social antes de se declarar"
+          ]
+        },
+        {
+          "titulo": "O limite que quase ninguém confere",
+          "itens": [
+            "Some os contratos públicos já assinados no ano",
+            "Se a soma passar de R$ 4,8 milhões, você perde os benefícios",
+            "O órgão vai exigir declaração sobre esse limite",
+            "Em contratos de mais de 1 ano, conta o valor anual"
+          ]
+        },
+        {
+          "titulo": "Itens grandes ficam de fora",
+          "itens": [
+            "Bens e serviços: item estimado acima de R$ 4,8 mi não tem benefício",
+            "Obras e engenharia: vale o valor estimado da licitação",
+            "Leia o valor estimado no edital antes de contar com a vantagem"
+          ]
+        },
+        {
+          "titulo": "Checklist rápido",
+          "itens": [
+            "Faturamento do ano dentro do limite?",
+            "Contrato social sem impedimentos?",
+            "Soma dos contratos públicos no ano conferida?",
+            "Valor do item ou da licitação dentro do teto?",
+            "Tudo ok? Declare com segurança"
+          ]
+        }
+      ],
+      "frase_story": "Antes de usar os benefícios ME/EPP, confira se sua empresa realmente se enquadra. Veja o checklist!",
+      "legenda_base": "Os benefícios para ME/EPP em licitações são uma grande vantagem, mas têm regras de entrada. A Lei 14.133/2021 aplica os benefícios da LC 123/2006, porém com limites: a soma dos contratos públicos no ano e o valor estimado do item ou da licitação. Faça o checklist antes de se declarar ME/EPP e evite problemas. Salve este post e compartilhe com quem está começando!",
+      "afirmacoes": [
+        {
+          "texto": "A Lei 14.133/2021 determina a aplicação, às licitações e contratos, das disposições dos arts. 42 a 49 da LC 123/2006.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "caput",
+            "url": null
+          }
+        },
+        {
+          "texto": "Microempresa é a que aufere, em cada ano-calendário, receita bruta igual ou inferior a R$ 360.000,00.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "3",
+            "dispositivo": "inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Empresa de pequeno porte é a que aufere receita bruta superior a R$ 360.000,00 e igual ou inferior a R$ 4.800.000,00.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "3",
+            "dispositivo": "inciso II",
+            "url": null
+          }
+        },
+        {
+          "texto": "Não se inclui no regime da LC 123/2006 a pessoa jurídica de cujo capital participe outra pessoa jurídica.",
+          "citacao": {
+            "norma": "LC 123/2006",
+            "artigo": "3",
+            "dispositivo": "§ 4º, inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Os benefícios ficam limitados às ME/EPP que, no ano-calendário da licitação, não tenham celebrado contratos com a Administração cujos valores somados extrapolem a receita bruta máxima de EPP, devendo o órgão exigir declaração de observância desse limite.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 2º",
+            "url": null
+          }
+        },
+        {
+          "texto": "Nas contratações com prazo de vigência superior a 1 ano, considera-se o valor anual do contrato para fins do limite.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 3º",
+            "url": null
+          }
+        },
+        {
+          "texto": "Na aquisição de bens ou contratação de serviços em geral, os benefícios não se aplicam ao item cujo valor estimado for superior à receita bruta máxima de EPP.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 1º, inciso I",
+            "url": null
+          }
+        },
+        {
+          "texto": "Em obras e serviços de engenharia, os benefícios não se aplicam às licitações cujo valor estimado for superior à receita bruta máxima de EPP.",
+          "citacao": {
+            "norma": "Lei 14.133/2021",
+            "artigo": "4",
+            "dispositivo": "§ 1º, inciso II",
+            "url": null
+          }
+        }
+      ],
+      "hashtags": [
+        "#licitacoes",
+        "#licitacaopublica",
+        "#microempresa",
+        "#pequenasempresas",
+        "#MEEPP",
+        "#lei14133",
+        "#LC123",
+        "#comprapublica",
+        "#empreendedorismo",
+        "#primeirospassos"
+      ],
+      "status": "descartada",
+      "motivo": "valor em reais no texto publicado sem afirmação correspondente: Bens e serviços: item estimado acima de R$ 4,8 mi não tem benefício"
+    }
+  ]
+}
