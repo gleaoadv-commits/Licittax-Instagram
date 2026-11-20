@@ -21,8 +21,11 @@ class Instagram:
             dados = r.json()
         except ValueError:
             dados = {}
+        if not isinstance(dados, dict):
+            raise ErroInstagram(f"resposta inesperada da API (HTTP {r.status_code})")
         if r.status_code >= 400 or "error" in dados:
-            msg = (dados.get("error") or {}).get("message") or f"HTTP {r.status_code}"
+            erro = dados.get("error")
+            msg = (erro.get("message") if isinstance(erro, dict) else None) or f"HTTP {r.status_code}"
             raise ErroInstagram(str(msg).replace(self._token, "***"))
         return dados
 
@@ -35,6 +38,12 @@ class Instagram:
 
     def _post(self, caminho, dados):
         return self._chamar("post", caminho, data={**dados, "access_token": self._token})
+
+    def _post_id(self, caminho, dados):
+        id_ = self._post(caminho, dados).get("id")
+        if not id_:
+            raise ErroInstagram(f"resposta da API sem id em {caminho}")
+        return id_
 
     def _get(self, caminho, params):
         return self._chamar("get", caminho, params={**params, "access_token": self._token})
@@ -51,22 +60,22 @@ class Instagram:
         raise ErroInstagram(f"container {container} nao ficou pronto a tempo")
 
     def _publicar(self, container):
-        return self._post(f"{self.ig}/media_publish", {"creation_id": container})["id"]
+        return self._post_id(f"{self.ig}/media_publish", {"creation_id": container})
 
     def publicar_story(self, url_imagem):
-        c = self._post(f"{self.ig}/media", {"image_url": url_imagem, "media_type": "STORIES"})["id"]
+        c = self._post_id(f"{self.ig}/media", {"image_url": url_imagem, "media_type": "STORIES"})
         self._aguardar(c)
         return self._publicar(c)
 
     def publicar_carrossel(self, urls, legenda):
         filhos = []
         for u in urls:
-            f = self._post(f"{self.ig}/media", {"image_url": u, "is_carousel_item": "true"})["id"]
+            f = self._post_id(f"{self.ig}/media", {"image_url": u, "is_carousel_item": "true"})
             self._aguardar(f)
             filhos.append(f)
-        pai = self._post(f"{self.ig}/media", {"media_type": "CAROUSEL",
+        pai = self._post_id(f"{self.ig}/media", {"media_type": "CAROUSEL",
                                               "children": ",".join(filhos),
-                                              "caption": legenda})["id"]
+                                              "caption": legenda})
         self._aguardar(pai)
         return self._publicar(pai)
 

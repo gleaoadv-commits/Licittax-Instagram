@@ -93,3 +93,25 @@ def test_token_invalido_levanta():
     responses.get(f"{G}/debug_token", json={"data": {"is_valid": False, "expires_at": 0}})
     with pytest.raises(ErroInstagram):
         ig().dias_ate_expirar_token("app", "sec")
+
+
+@responses.activate
+@pytest.mark.parametrize("corpo", [[1, 2], "texto", None, 5])
+def test_corpo_json_nao_dict_levanta_erro_instagram(corpo):
+    responses.post(f"{G}/123/media", json=corpo)
+    with pytest.raises(ErroInstagram):
+        ig().publicar_story("u")
+
+
+@responses.activate
+def test_erro_nao_dict_levanta_erro_instagram():
+    responses.post(f"{G}/123/media", status=500, json={"error": "falhou"})
+    with pytest.raises(ErroInstagram):
+        ig().publicar_story("u")
+
+
+@responses.activate
+def test_resposta_200_sem_id_levanta():
+    responses.post(f"{G}/123/media", json={})
+    with pytest.raises(ErroInstagram, match="sem id"):
+        ig().publicar_story("u")
