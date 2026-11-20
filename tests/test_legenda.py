@@ -26,7 +26,7 @@ def test_legenda_termina_com_cta_e_hashtags():
     t = montar_legenda(dica(), "Gancho!", CFG)
     assert "(31) 3157-6737" in t
     assert t.index("(31) 3157-6737") < t.index("#me")
-    assert t.startswith("Gancho!\n\nTexto base.\n\n📚 Base legal: Lei 14.133/2021, 55\n\n")
+    assert t.startswith("Gancho!\n\nTexto base.\n\n📚 Base legal: Lei 14.133/2021, art. 55\n\n")
     assert t.endswith("#me #Licitacao #licittax")
 
 
