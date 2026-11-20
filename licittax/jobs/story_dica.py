@@ -1,16 +1,20 @@
-"""Job: story diario com a frase da dica do dia."""
+"""Job das 18h: story da dica (dia de post) ou segundo story de edital (dia sem post)."""
 import sys
 from datetime import datetime
 
-from licittax.datas import hoje_brasilia
+from licittax.datas import eh_dia_de_post, hoje_brasilia
 from licittax.jobs.comum import Deps, agora, dica_de_hoje, etapa, executar
+from licittax.jobs.story_edital import publicar_edital
 
 
 def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     cfg = deps.config()
+    hoje = hoje_brasilia(agora(agora_utc))
+    if not eh_dia_de_post(hoje, cfg.inicio_rotacao):
+        publicar_edital(agora_utc, deps, "-tarde")
+        return
     if not cfg.ensaio:
         deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
-    hoje = hoje_brasilia(agora(agora_utc))
     dica = dica_de_hoje(deps, cfg, hoje)
     arte = etapa("gerar arte do story", deps.arte_story_dica, dica, cfg, deps.saida())
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from licittax import hospedagem, ia, instagram
@@ -86,4 +86,7 @@ def etapa(descricao: str, fn: Callable, *args, **kw):
 
 def dica_de_hoje(deps: Deps, cfg: Config, hoje: date):
     banco = etapa("ler banco de dicas", carregar_banco, deps.raiz / "data" / "banco_dicas.json")
-    return etapa("escolher dica do dia", dica_do_dia, banco, hoje, cfg.inicio_rotacao)
+    # a rotacao avanca so nos dias de post: posicao = idx // 2
+    posicao = (hoje - cfg.inicio_rotacao).days // 2
+    dia_efetivo = cfg.inicio_rotacao + timedelta(days=posicao)
+    return etapa("escolher dica do dia", dica_do_dia, banco, dia_efetivo, cfg.inicio_rotacao)

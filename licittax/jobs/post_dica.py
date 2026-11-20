@@ -2,16 +2,19 @@
 import sys
 from datetime import datetime
 
-from licittax.datas import hoje_brasilia
+from licittax.datas import eh_dia_de_post, hoje_brasilia
 from licittax.jobs.comum import Deps, agora, dica_de_hoje, etapa, executar
 from licittax.legenda import montar_legenda
 
 
 def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     cfg = deps.config()
+    hoje = hoje_brasilia(agora(agora_utc))
+    if not eh_dia_de_post(hoje, cfg.inicio_rotacao):
+        print("Hoje não é dia de post.")
+        return
     if not cfg.ensaio:
         deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
-    hoje = hoje_brasilia(agora(agora_utc))
     dica = dica_de_hoje(deps, cfg, hoje)
     pasta = deps.saida()
     artes = etapa("gerar artes do carrossel", deps.artes_carrossel, dica, pasta)

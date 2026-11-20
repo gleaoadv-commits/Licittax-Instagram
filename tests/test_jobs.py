@@ -1,5 +1,5 @@
 from dataclasses import replace
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from licittax import ia
 from licittax.artes.render import TextoEstourado
@@ -193,3 +193,51 @@ def test_story_edital_sem_edital_em_3_dias_falha(tmp_path):
     deps, ig, _ = fazer(tmp_path, escolher_edital=nenhum)
     assert story_edital.main(AGORA, deps) == 1
     assert len(datas) == 3 and not ig.stories
+
+
+DIA_POST = AGORA                                   # idx 0 (post)
+DIA_SEM_POST = datetime(2026, 11, 21, 12, tzinfo=timezone.utc)  # idx 1
+
+
+def test_post_dica_em_dia_sem_post_nao_faz_nada(tmp_path, capsys):
+    deps, ig, ch = fazer(
+        tmp_path,
+        artes_carrossel=lambda *a: (_ for _ in ()).throw(AssertionError("render")),
+        criar_cliente=lambda env: (_ for _ in ()).throw(AssertionError("ia")),
+    )
+    assert post_dica.main(DIA_SEM_POST, deps) == 0
+    assert "Hoje não é dia de post." in capsys.readouterr().out
+    assert not ig.carrosseis and not ch["hospedar"]
+
+
+def test_story_da_tarde_em_dia_sem_post_publica_segundo_edital(tmp_path):
+    deps, ig, ch = fazer(tmp_path)
+    assert story_dica.main(DIA_SEM_POST, deps) == 0
+    assert ch["hospedar"] == ["2026-11-21-edital-tarde"]
+    assert len(ig.stories) == 1 and ch["commitar"]
+
+
+def test_story_da_tarde_ensaio_edital_usa_outro_nome_de_arquivo(tmp_path):
+    deps, ig, ch = fazer(tmp_path, cfg=replace(CFG, ensaio=True), env={},
+                         arte_story_edital=lambda e, r, c, p: _escrever(p / "story_edital.jpg"))
+    assert story_dica.main(DIA_SEM_POST, deps) == 0
+    assert (tmp_path / "saida" / "story_edital_tarde.jpg").exists()
+    assert not (tmp_path / "saida" / "story_edital.jpg").exists()
+
+
+def _escrever(p):
+    p.parent.mkdir(exist_ok=True, parents=True)
+    p.write_bytes(b"x")
+    return p
+
+
+def test_dicas_avancam_so_nos_dias_de_post(tmp_path):
+    from licittax.jobs.comum import dica_de_hoje
+    dicas = [replace(_dica(), id=f"t{t}-0{n}", trilha=t) for t in (1, 2, 3) for n in (1, 2)]
+    salvar_banco(dicas, tmp_path / "data" / "banco_dicas.json")
+    deps, _, _ = fazer(tmp_path)
+    ini = CFG.inicio_rotacao
+    d = lambda idx: dica_de_hoje(deps, CFG, ini + timedelta(days=idx)).id
+    assert d(0) != d(2) != d(4)
+    assert d(0) != d(4)
+    assert d(0) == d(1)  # dia sem post: idx 1 nao e dia de post (mesma posicao, nao usada)

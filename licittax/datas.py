@@ -21,3 +21,8 @@ def dias_uteis_entre(inicio: date, fim: date) -> int:
             total += 1
         dia += timedelta(days=1)
     return total
+
+
+def eh_dia_de_post(hoje: date, inicio: date) -> bool:
+    """Dias alternados: o dia de inicio da rotacao e dia de post, depois dia sim/dia nao."""
+    return (hoje - inicio).days % 2 == 0

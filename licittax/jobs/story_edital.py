@@ -10,7 +10,8 @@ from licittax.jobs.comum import Deps, FalhaJob, agora, etapa, executar
 from licittax.pncp.selecao import NenhumEditalError
 
 
-def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
+def publicar_edital(agora_utc: datetime | None, deps: Deps, sufixo: str = "") -> None:
+    """Fluxo do story de edital. sufixo (ex.: '-tarde') separa prefixo de hospedagem e arquivo de ensaio."""
     cfg = deps.config()
     if not cfg.ensaio:
         deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
@@ -47,11 +48,13 @@ def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
         raise FalhaJob(f"falha em 'gerar arte do story': {type(e).__name__}: {e}") from e
 
     if cfg.ensaio:
+        if sufixo:
+            arte = arte.replace(arte.with_name(f"{arte.stem}{sufixo.replace('-', '_')}{arte.suffix}"))
         print(f"[story_edital] ensaio: arte salva em {arte}")
         return
 
     urls = etapa("hospedar imagem", deps.hospedar, [arte], deps.raiz,
-                 deps.env["GITHUB_REPOSITORY"], f"{hoje}-edital")
+                 deps.env["GITHUB_REPOSITORY"], f"{hoje}-edital{sufixo}")
     ig = deps.criar_instagram(cfg, deps.env)
     etapa("publicar story", ig.publicar_story, urls[0])
     print(f"[story_edital] story publicado: {escolha.edital.numero_controle}")
@@ -67,7 +70,7 @@ def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
 
 def main(agora_utc: datetime | None = None, deps: Deps | None = None) -> int:
     deps = deps or Deps()
-    return executar("story_edital", lambda: _rodar(agora_utc, deps))
+    return executar("story_edital", lambda: publicar_edital(agora_utc, deps))
 
 
 if __name__ == "__main__":

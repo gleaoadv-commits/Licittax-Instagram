@@ -4,9 +4,15 @@ Este guia é uma **referência** do que já foi configurado e de como refazer ca
 
 ## O que o agente faz sozinho (horário de Brasília)
 
-- 09h: story com um edital do dia anterior (SP, MG ou RJ).
-- 12h: post (carrossel) com a dica do dia.
-- 18h: story com a mesma dica.
+Os dias se **alternam** (dia de post, dia sem post, dia de post...), para economizar dicas:
+
+| Dia | 09h | 12h | 18h |
+|---|---|---|---|
+| **Dia de post** | story de edital (SP, MG ou RJ) | post (carrossel) com a dica | story com a mesma dica |
+| **Dia sem post** | story de edital | nada (o agente avisa "Hoje não é dia de post") | story com **outro** edital (nunca repete o da manhã) |
+
+A dica só avança nos dias de post. Quem define qual é dia de post é o campo `inicio_rotacao` no arquivo `config.yaml` (uma data, por exemplo `2026-11-20`): **essa data é dia de post**, o dia seguinte é dia sem post, e assim por diante. Para inverter (trocar os dias de post e de folga), mude `inicio_rotacao` para a data de um dia a mais ou a menos. Mudar essa data também reinicia a ordem das dicas.
+
 - Segunda-feira, 08h: verificação do token do Instagram (avisa por e-mail se estiver com problema).
 
 ## 1. Repositório no GitHub
@@ -73,7 +79,7 @@ Para trocar o token: abra o Secret `IG_TOKEN`, clique em **Update** e cole o nov
 
 ### Ligar e pausar o agente (agendamentos)
 
-Os fluxos agendados (Story de edital, Post de dica, Story de dica, Checar token) **só rodam sozinhos** quando a variável `AGENTE_ATIVO` for `true`. Execuções manuais (**Run workflow**) funcionam sempre.
+Os fluxos agendados (Story de edital, Post de dica, Story da tarde (dica ou edital), Checar token) **só rodam sozinhos** quando a variável `AGENTE_ATIVO` for `true`. Execuções manuais (**Run workflow**) funcionam sempre.
 
 - **Ligar**: Settings → Secrets and variables → Actions → aba **Variables** → **New repository variable** → Name `AGENTE_ATIVO`, Value `true`.
 - **Pausar**: mude o valor para `false` (ou apague a variável).
@@ -81,9 +87,9 @@ Os fluxos agendados (Story de edital, Post de dica, Story de dica, Checar token)
 ## 6. Como rodar manualmente (inclusive em "ensaio")
 
 1. No repositório, aba **Actions**.
-2. Escolha o fluxo na lista à esquerda (Story de edital, Post de dica, Story de dica, Checar token, Gerar banco de dicas).
+2. Escolha o fluxo na lista à esquerda (Story de edital, Post de dica, Story da tarde (dica ou edital), Checar token, Gerar banco de dicas).
 3. Clique em **Run workflow**.
-4. Nos fluxos Story de edital, Post de dica e Story de dica (somente nesses três) aparece a caixa **Ensaio**. **Marcada**: gera as imagens e a legenda, mas **não publica nada**; as imagens ficam no fim da página da execução, em **Artifacts** (baixe o .zip). **Desmarcada**: publica de verdade.
+4. Nos fluxos Story de edital, Post de dica e Story da tarde (somente nesses três) aparece a caixa **Ensaio**. **Marcada**: gera as imagens e a legenda, mas **não publica nada**; as imagens ficam no fim da página da execução, em **Artifacts** (baixe o .zip). **Desmarcada**: publica de verdade.
 
 ### Gerar o banco de dicas aos poucos (gasta pouco crédito)
 

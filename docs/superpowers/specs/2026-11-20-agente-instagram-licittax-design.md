@@ -10,15 +10,16 @@ O conteúdo serve para atrair empresas — principalmente **ME e EPP** (que têm
 
 Dores reais do público, segundo o dono: não sabem por onde começar, não sabem se cadastrar, não sabem o que é o SICAF, não sabem tirar certidões, não sabem dar lances, não sabem acompanhar processos e não sabem acompanhar a execução do contrato (a Licittax também faz gestão contratual).
 
-## 2. O que é publicado, todo dia
+## 2. O que é publicado (dias alternados — atualizado pelo dono em 2026-11-20)
 
-| # | Formato | Conteúdo | Horário (Brasília) |
-|---|---------|----------|--------------------|
-| 1 | Story (1080×1920) | Edital recém-publicado, vindo da API do PNCP | 09:00 |
-| 2 | Post no feed — carrossel (1080×1350) | Dica de licitação, explicação completa | 12:00 |
-| 3 | Story (1080×1920) | Dica rápida, mesmo tema do post do dia | 18:00 |
+Para economizar dicas e crédito, os dias se alternam. O dia 0 da rotação (`inicio_rotacao`) é dia de post; a partir dele, alterna.
 
-Todos os dias, incluindo fins de semana *(chamada do Claude — não foi discutido)*. Horários são proposta, ajustáveis em configuração.
+| Dia | 09:00 | 12:00 | 18:00 |
+|-----|-------|-------|-------|
+| **Dia de post** | Story: edital do PNCP | Post no feed — carrossel (1080×1350) com a dica | Story: dica rápida, mesmo tema do post |
+| **Dia sem post** | Story: edital do PNCP | — | Story: **outro** edital (o próximo melhor, nunca repetido) |
+
+Stories 1080×1920. Todos os dias, incluindo fins de semana *(chamada do Claude)*. O segundo edital às 18h é chamada do Claude (dono pediu "horários diferentes"). A dica avança só nos dias de post, então cada dica cobre 2 dias de calendário.
 
 ### Contato comercial (decidido pelo dono)
 - **Stories:** sem link, sem figurinhas. A arte traz uma chamada comercial e o número **(31) 3157-6737** escrito na imagem.
