@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from licittax.dicas.banco import carregar_banco, dica_do_dia, salvar_banco
+from licittax.dicas.banco import carregar_banco, dica_do_dia, mesclar_banco, salvar_banco
 from licittax.dicas.modelo import Afirmacao, Citacao, Dica, Slide
 
 INICIO = date(2026, 12, 1)
@@ -71,3 +71,34 @@ def test_dia_anterior_ao_inicio():
 def test_sem_aprovadas():
     with pytest.raises(ValueError):
         dica_do_dia([replace_status(d(1, 1), "descartada")], INICIO, INICIO)
+
+
+def test_trilha_vazia_nao_repete_dica_em_dias_seguidos():
+    b = [x for x in banco(3) if x.trilha != 2]
+    d1 = dica_do_dia(b, INICIO + timedelta(days=1), INICIO)
+    d2 = dica_do_dia(b, INICIO + timedelta(days=2), INICIO)
+    assert d1.trilha == d2.trilha == 3 and d1.id != d2.id
+
+
+def test_mesclar_mantem_existentes_das_trilhas_falhas():
+    antigas = [d(1, 1), d(2, 1), d(2, 2)]
+    novas = [d(1, 5), d(3, 1)]
+    r = mesclar_banco(novas, antigas, {2})
+    assert sorted(x.id for x in r) == ["t1-05", "t2-01", "t2-02", "t3-01"]
+
+
+def test_mesclar_sem_falhas_usa_so_novas():
+    assert mesclar_banco([d(1, 5)], [d(1, 1)], set()) == [d(1, 5)]
+
+
+@pytest.mark.parametrize("campo,valor", [("itens", "x"), ("hashtags", "#a")])
+def test_from_dict_exige_listas(campo, valor):
+    dd = {"id": "t1-01", "trilha": 1, "titulo": "t",
+          "slides": [{"titulo": "a", "itens": ["i"]}], "frase_story": "f",
+          "legenda_base": "l", "afirmacoes": [], "hashtags": ["#a"]}
+    if campo == "itens":
+        dd["slides"][0]["itens"] = valor
+    else:
+        dd["hashtags"] = valor
+    with pytest.raises(ValueError):
+        Dica.from_dict(dd)

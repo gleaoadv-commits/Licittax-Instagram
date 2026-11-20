@@ -36,5 +36,12 @@ def dica_do_dia(banco: list[Dica], dia: date, inicio: date) -> Dica:
         numero = TRILHAS[(idx + passo) % n].numero
         da_trilha = sorted((d for d in aprovadas if d.trilha == numero), key=_chave_id)
         if da_trilha:
-            return da_trilha[(idx // n) % len(da_trilha)]
+            return da_trilha[(idx // n + passo) % len(da_trilha)]
     raise ValueError("nenhuma trilha com dicas aprovadas")
+
+
+def mesclar_banco(novas: list[Dica], existentes: list[Dica],
+                  trilhas_falhas: set[int]) -> list[Dica]:
+    """Mantém as dicas já existentes das trilhas que falharam na geração."""
+    mantidas = [d for d in existentes if d.trilha in trilhas_falhas]
+    return mantidas + [d for d in novas if d.trilha not in trilhas_falhas]

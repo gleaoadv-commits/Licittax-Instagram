@@ -2,15 +2,42 @@ from __future__ import annotations
 
 import re
 from dataclasses import replace
+from decimal import Decimal
 
-from licittax.ia import verificar_afirmacao
+from licittax.ia import verificar_afirmacao, verificar_cobertura
 from licittax.leis import texto_artigo
 from licittax.dicas.modelo import Dica
 
 TELEFONE = re.compile(r"\(?\d{2}\)?\s?\d{4,5}-\d{4}")
 
 
-def _textos(d: Dica) -> list[str]:
+_NUM = r"(\d[\d.]*(?:,\d+)?)"
+_MULT = r"(mil|milh(?:ão|ões|ao|oes))"
+DINHEIRO = [
+    re.compile(r"R\$\s*" + _NUM + r"(?:\s*" + _MULT + r"\b)?", re.I),
+    re.compile(_NUM + r"\s*(?:" + _MULT + r"\s+)?reais\b", re.I),
+]
+LC123 = "LC 123/2006"
+
+
+def _valores(texto: str) -> set[Decimal]:
+    achados: set[Decimal] = set()
+    for rx in DINHEIRO:
+        for m in rx.finditer(texto):
+            try:
+                v = Decimal(m.group(1).rstrip(".").replace(".", "").replace(",", "."))
+            except Exception:
+                continue
+            mult = (m.group(2) or "").lower()
+            if mult == "mil":
+                v *= 1000
+            elif mult.startswith("milh"):
+                v *= 1_000_000
+            achados.add(v.normalize())
+    return achados
+
+
+def _publicados(d: Dica) -> list[str]:
     t = [d.titulo, d.frase_story, d.legenda_base]
     for s in d.slides:
         t.append(s.titulo)
@@ -18,7 +45,11 @@ def _textos(d: Dica) -> list[str]:
     return t
 
 
-def _motivo_falha(dica: Dica, obter_texto, verificar, cliente) -> str | None:
+def _textos(d: Dica) -> list[str]:
+    return _publicados(d) + list(d.hashtags)
+
+
+def _motivo_falha(dica: Dica, obter_texto, verificar, verificar_texto, cliente) -> str | None:
     if not 3 <= len(dica.slides) <= 6:
         return f"número de slides fora de 3 a 6 ({len(dica.slides)})"
     if len(dica.titulo) > 60:
@@ -33,10 +64,17 @@ def _motivo_falha(dica: Dica, obter_texto, verificar, cliente) -> str | None:
     for a in dica.afirmacoes:
         if a.citacao is None:
             return f"afirmação sem citação: {a.texto}"
+    cobertos: set[Decimal] = set()
     for a in dica.afirmacoes:
         c = a.citacao
-        if "R$" in a.texto and not c.norma.strip().startswith("Decreto"):
+        v = _valores(a.texto)
+        cobertos |= v
+        norma = c.norma.strip()
+        if v and not (norma.startswith("Decreto") or norma == LC123):
             return f"valor em reais sem decreto citado: {a.texto}"
+    for t in _publicados(dica):
+        if not _valores(t) <= cobertos:
+            return f"valor em reais no texto publicado sem afirmação correspondente: {t}"
     for a in dica.afirmacoes:
         c = a.citacao
         try:
@@ -50,13 +88,20 @@ def _motivo_falha(dica: Dica, obter_texto, verificar, cliente) -> str | None:
             return f"erro na verificação: {e}"
         if r.sustenta is not True:
             return f"dispositivo não sustenta a afirmação ({a.texto}): {r.motivo}"
+    try:
+        r = verificar_texto(chr(10).join(_publicados(dica)), [a.texto for a in dica.afirmacoes],
+                            cliente)
+    except Exception as e:
+        return f"erro na verificação de cobertura: {e}"
+    if r.sustenta is not True:
+        return f"texto publicado com conteúdo não coberto: {r.motivo}"
     return None
 
 
 def checar_dica(dica: Dica, obter_texto=texto_artigo, verificar=verificar_afirmacao,
-                cliente=None) -> Dica:
+                cliente=None, verificar_texto=verificar_cobertura) -> Dica:
     try:
-        falha = _motivo_falha(dica, obter_texto, verificar, cliente)
+        falha = _motivo_falha(dica, obter_texto, verificar, verificar_texto, cliente)
     except Exception as e:  # fail closed
         falha = f"erro inesperado na checagem: {e}"
     if falha:

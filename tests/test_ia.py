@@ -139,3 +139,20 @@ def test_gerar_dicas_vazio_ou_nao_json():
 def test_verificacao_max_tokens_reprova():
     c = ClienteFalso(json.dumps({"sustenta": True, "motivo": "ok"}), parada="max_tokens")
     assert ia.verificar_afirmacao("a", "d", "t", c).sustenta is False
+
+
+def test_cobertura_le_json():
+    c = ClienteFalso(json.dumps({"sustenta": True, "motivo": "ok"}))
+    assert ia.verificar_cobertura("texto", ["a"], c) == ia.Verificacao(True, "ok")
+    assert c.chamadas[0]["model"] == ia.MODELO_RIGOROSO
+
+
+@pytest.mark.parametrize("c", [
+    ClienteFalso("não é json"),
+    ClienteFalso(erro=RuntimeError("x")),
+    ClienteFalso('{"sustenta": "sim", "motivo": "x"}'),
+    ClienteFalso('{"sustenta": true, "motivo": "ok"}', parada="max_tokens"),
+    ClienteFalso('{"sustenta": true, "motivo": "ok"}', parada="refusal"),
+])
+def test_cobertura_falha_fechada(c):
+    assert ia.verificar_cobertura("t", ["a"], c).sustenta is False

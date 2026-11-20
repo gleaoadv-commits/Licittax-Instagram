@@ -62,15 +62,20 @@ class Dica:
 
     @staticmethod
     def from_dict(d: dict) -> "Dica":
+        def lista(x):
+            if not isinstance(x, list):
+                raise ValueError("campo deve ser lista")
+            return tuple(x)
+
         def cit(c):
             if not c:
                 return None
             return Citacao(c["norma"], c["artigo"], c.get("dispositivo") or "", c.get("url"))
         return Dica(
             id=d["id"], trilha=int(d["trilha"]), titulo=d["titulo"],
-            slides=tuple(Slide(s["titulo"], tuple(s["itens"])) for s in d["slides"]),
+            slides=tuple(Slide(s["titulo"], lista(s["itens"])) for s in d["slides"]),
             frase_story=d["frase_story"], legenda_base=d["legenda_base"],
             afirmacoes=tuple(Afirmacao(a["texto"], cit(a.get("citacao")))
                              for a in d["afirmacoes"]),
-            hashtags=tuple(d["hashtags"]), status=d.get("status", "pendente"),
+            hashtags=lista(d["hashtags"]), status=d.get("status", "pendente"),
             motivo=d.get("motivo", ""))

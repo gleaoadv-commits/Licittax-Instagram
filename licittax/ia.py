@@ -189,6 +189,34 @@ def verificar_afirmacao(afirmacao: str, dispositivo: str, texto_lei: str, client
         return Verificacao(False, "erro na verificação")
 
 
+SISTEMA_COBERTURA = (
+    "Você é um revisor jurídico rigoroso de conteúdo sobre licitações no Brasil. "
+    "Responda apenas no formato JSON pedido."
+)
+
+
+def verificar_cobertura(textos_publicados: str, afirmacoes_verificadas: list[str],
+                        cliente) -> Verificacao:
+    """Confere se o texto publicado só afirma o que já foi verificado. Falha fechada."""
+    try:
+        lista = "\n".join(f"- {a}" for a in afirmacoes_verificadas)
+        prompt = (f"TEXTO PUBLICADO:\n{textos_publicados}\n\n"
+                  f"AFIRMAÇÕES VERIFICADAS:\n{lista}\n\n"
+                  "O texto publicado contém alguma afirmação jurídica, prazo, valor, percentual "
+                  "ou referência legal que NÃO esteja coberta pelas afirmações verificadas "
+                  "listadas? Se sim, sustenta=false; se tudo está coberto, sustenta=true.")
+        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_COBERTURA, prompt, 2048,
+                                "high", SCHEMA_VERIFICACAO)
+        if parada in ("max_tokens", "refusal"):
+            raise ValueError(f"resposta incompleta: {parada}")
+        dados = json.loads(bruto)
+        if not isinstance(dados["sustenta"], bool) or not isinstance(dados["motivo"], str):
+            raise ValueError("formato inválido")
+        return Verificacao(dados["sustenta"], dados["motivo"])
+    except Exception:
+        return Verificacao(False, "erro na verificação de cobertura")
+
+
 class ErroGeracaoDicas(Exception):
     """Falha ao gerar dicas (truncamento, recusa ou resposta inválida)."""
 
