@@ -96,4 +96,6 @@ def tem_item_exclusivo_me_epp(
     if r is None:
         return False
     itens = _json(r, url)
+    if not isinstance(itens, list) or not all(isinstance(i, dict) for i in itens):
+        raise ErroPNCP(f"Itens com formato inesperado em {url}")
     return any(i.get("tipoBeneficio") == TIPO_BENEFICIO_EXCLUSIVO_ME_EPP for i in itens)

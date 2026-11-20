@@ -10,6 +10,7 @@ como "descartar a dica").
 from __future__ import annotations
 
 import re
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -58,6 +59,8 @@ def extrair_artigo(html: str, artigo: str) -> str:
     soup = BeautifulSoup(html, "html.parser")
     for tag in soup.find_all(["strike", "s", "del"]):
         tag.decompose()
+    for tag in soup.find_all(style=re.compile(r"line-through", re.I)):
+        tag.decompose()
 
     partes: list[str] = []
     dentro = False
@@ -93,9 +96,20 @@ def _baixa(url: str, sessao=None) -> str:
     return html
 
 
+def _url_planalto(url: str) -> bool:
+    try:
+        u = urlparse(url)
+    except ValueError:
+        return False
+    return u.scheme == "https" and u.hostname in ("www.planalto.gov.br", "planalto.gov.br")
+
+
 def texto_artigo(norma: str, artigo: str, url: str | None = None, sessao=None) -> str:
     """Texto oficial do artigo. `url` é obrigatória para normas fora de FONTES."""
-    alvo = url or FONTES.get(norma)
-    if not alvo:
-        raise ArtigoNaoEncontrado(f"Sem fonte conhecida para {norma!r}")
+    if norma in FONTES:
+        alvo = FONTES[norma]  # fonte conhecida: ignora a url sugerida pelo modelo
+    elif url and _url_planalto(url):
+        alvo = url
+    else:
+        raise ArtigoNaoEncontrado(f"Sem fonte confiável para {norma!r}")
     return extrair_artigo(_baixa(alvo, sessao), artigo)

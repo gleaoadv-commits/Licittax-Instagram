@@ -13,7 +13,7 @@ concurrency:
 jobs:
   gerar:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 340
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,6 +39,6 @@ jobs:
             echo "Nenhuma alteracao no banco."
           else
             git commit -m "chore: atualizar banco de dicas"
-            git push
+            git pull --rebase && git push
           fi
           exit $rc

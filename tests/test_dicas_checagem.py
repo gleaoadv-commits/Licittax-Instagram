@@ -52,7 +52,7 @@ def test_descarta_afirmacao_sem_citacao():
 def test_descarta_valor_em_reais_sem_decreto():
     d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", CIT),))
     assert checar_dica(d, texto_ok, sim, verificar_texto=cob_ok).status == "descartada"
-    d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", Citacao("Decreto 12.343/2024", "art. 1")),))
+    d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", Citacao("LC 123/2006", "art. 48")),))
     assert checar_dica(d, texto_ok, sim, verificar_texto=cob_ok).status == "aprovada"
 
 
@@ -160,9 +160,9 @@ def test_descarta_valor_em_slide_sem_afirmacao():
     assert checar_dica(d, texto_ok, sim, verificar_texto=cob_ok).status == "descartada"
 
 
-def test_valor_em_slide_coberto_por_afirmacao_com_decreto():
+def test_valor_em_slide_coberto_por_afirmacao_com_lc123():
     d = dica(slides=(Slide("a", ("Limite de R$ 50.000,00",)),) * 3,
-             afirmacoes=(Afirmacao("Limite de 50 mil reais.", DEC),))
+             afirmacoes=(Afirmacao("Limite de 50 mil reais.", Citacao("LC 123/2006", "art. 48")),))
     assert checar_dica(d, texto_ok, sim, verificar_texto=cob_ok).status == "aprovada"
 
 
@@ -175,3 +175,9 @@ def test_valor_com_lc123_passa():
     d = dica(slides=(Slide("a", ("Exclusivo até R$ 80 mil",)),) * 3,
              afirmacoes=(Afirmacao("Exclusividade até R$ 80 mil.", Citacao("LC 123/2006", "art. 48")),))
     assert checar_dica(d, texto_ok, sim, verificar_texto=cob_ok).status == "aprovada"
+
+
+def test_valor_com_qualquer_decreto_descarta():
+    d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", DEC),))
+    r = checar_dica(d, texto_ok, sim, verificar_texto=cob_ok)
+    assert r.status == "descartada" and "decreto" in r.motivo

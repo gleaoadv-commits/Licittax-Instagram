@@ -18,16 +18,25 @@ MIN_APROVADAS = 8
 
 def main() -> int:
     cliente = criar_cliente()
+    existentes = carregar_banco(CAMINHO) if CAMINHO.exists() else []
     banco: list[Dica] = []
     falhou = False
     trilhas_falhas: set[int] = set()
+    pendentes = {t.numero for t in TRILHAS}
+
+    def salvar_parcial() -> None:
+        # trilhas ainda nao processadas ou falhas mantem o que ja existia no banco
+        salvar_banco(mesclar_banco(banco, existentes, trilhas_falhas | pendentes), CAMINHO)
+
     for t in TRILHAS:
+        pendentes.discard(t.numero)
         try:
             brutas = gerar_dicas(t.nome, t.temas, CANDIDATAS, cliente)
         except ErroGeracaoDicas as e:
             print(f"Trilha {t.numero} ({t.nome}): FALHA na geração: {e}")
             falhou = True
             trilhas_falhas.add(t.numero)
+            salvar_parcial()
             continue
         titulos: set[str] = set()
         candidatas: list[Dica] = []
@@ -54,8 +63,8 @@ def main() -> int:
         print(f"Trilha {t.numero} ({t.nome}): {aprovadas} aprovadas, {descartadas} descartadas")
         if aprovadas < MIN_APROVADAS:
             falhou = True
-    existentes = carregar_banco(CAMINHO) if CAMINHO.exists() else []
-    salvar_banco(mesclar_banco(banco, existentes, trilhas_falhas), CAMINHO)
+            trilhas_falhas.add(t.numero)  # trilha fraca: mantem as dicas existentes
+        salvar_parcial()
     return 1 if falhou else 0
 
 

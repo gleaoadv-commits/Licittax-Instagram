@@ -70,8 +70,8 @@ def _motivo_falha(dica: Dica, obter_texto, verificar, verificar_texto, cliente) 
         v = _valores(a.texto)
         cobertos |= v
         norma = c.norma.strip()
-        if v and not (norma.startswith("Decreto") or norma == LC123):
-            return f"valor em reais sem decreto citado: {a.texto}"
+        if v and norma != LC123:
+            return f"valor em reais sujeito a atualização por decreto: {a.texto}"
     for t in _publicados(dica):
         if not _valores(t) <= cobertos:
             return f"valor em reais no texto publicado sem afirmação correspondente: {t}"

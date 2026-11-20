@@ -1,6 +1,6 @@
 """Job: story diario com um edital do PNCP."""
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from licittax.artes.render import TextoEstourado
 from licittax.datas import hoje_brasilia, ontem_brasilia
@@ -19,12 +19,19 @@ def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     caminho_estado = deps.raiz / "data" / "estado.json"
     estado = etapa("ler estado", carregar_estado, caminho_estado)
 
+    escolha = None
     try:
-        escolha = deps.escolher_edital(ontem, hoje, estado, cfg)
-    except NenhumEditalError:
-        raise FalhaJob("nenhum edital valido encontrado para hoje; nada foi publicado") from None
+        # fim de semana/feriado: se ontem nao rendeu, recua ate 2 dias
+        for recuo in range(3):
+            try:
+                escolha = deps.escolher_edital(ontem - timedelta(days=recuo), hoje, estado, cfg)
+                break
+            except NenhumEditalError:
+                continue
     except Exception as e:
         raise FalhaJob(f"falha em 'buscar edital no PNCP': {type(e).__name__}: {e}") from e
+    if escolha is None:
+        raise FalhaJob("nenhum edital valido encontrado para hoje; nada foi publicado")
 
     cliente = deps.criar_cliente(deps.env)
     resumo = deps.resumir_objeto(escolha.edital.objeto, cliente)

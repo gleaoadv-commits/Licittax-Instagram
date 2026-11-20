@@ -71,6 +71,13 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 
 Para trocar o token: abra o Secret `IG_TOKEN`, clique em **Update** e cole o novo valor.
 
+### Ligar e pausar o agente (agendamentos)
+
+Os fluxos agendados (Story de edital, Post de dica, Story de dica, Checar token) **só rodam sozinhos** quando a variável `AGENTE_ATIVO` for `true`. Execuções manuais (**Run workflow**) funcionam sempre.
+
+- **Ligar**: Settings → Secrets and variables → Actions → aba **Variables** → **New repository variable** → Name `AGENTE_ATIVO`, Value `true`.
+- **Pausar**: mude o valor para `false` (ou apague a variável).
+
 ## 6. Como rodar manualmente (inclusive em "ensaio")
 
 1. No repositório, aba **Actions**.

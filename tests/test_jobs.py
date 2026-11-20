@@ -168,3 +168,28 @@ def test_checar_token_erro_retorna_1(tmp_path):
         raise ErroInstagram("invalido")
     ig.dias_ate_expirar_token = falha
     assert checar_token.main(deps=fazer(tmp_path, ig=ig)[0]) == 1
+
+
+def test_story_edital_fim_de_semana_recua_ate_achar(tmp_path):
+    datas = []
+
+    def escolher(o, h, est, cfg):
+        datas.append(o)
+        if o > date(2026, 11, 17):
+            raise NenhumEditalError("x")
+        return Escolha(EDITAL, True, 1)
+    deps, ig, _ = fazer(tmp_path, escolher_edital=escolher)
+    assert story_edital.main(AGORA, deps) == 0
+    assert datas == [date(2026, 11, 19), date(2026, 11, 18), date(2026, 11, 17)]
+    assert ig.stories
+
+
+def test_story_edital_sem_edital_em_3_dias_falha(tmp_path):
+    datas = []
+
+    def nenhum(o, *a):
+        datas.append(o)
+        raise NenhumEditalError("x")
+    deps, ig, _ = fazer(tmp_path, escolher_edital=nenhum)
+    assert story_edital.main(AGORA, deps) == 1
+    assert len(datas) == 3 and not ig.stories

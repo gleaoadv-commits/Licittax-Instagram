@@ -156,3 +156,35 @@ def test_cobertura_le_json():
 ])
 def test_cobertura_falha_fechada(c):
     assert ia.verificar_cobertura("t", ["a"], c).sustenta is False
+
+
+def test_verificadores_usam_16000_tokens():
+    ok = json.dumps({"sustenta": True, "motivo": "ok"})
+    c = ClienteFalso(ok)
+    ia.verificar_afirmacao("a", "d", "t", c)
+    ia.verificar_cobertura("t", ["a"], c)
+    assert [x["max_tokens"] for x in c.chamadas] == [16000, 16000]
+
+
+@pytest.mark.parametrize("gancho", [
+    "Você sabia que são 8 dias?", "Ganhe 20% de vantagem", "Limite de R$ mil", "Veja o art. 55",
+    "O artigo importa", "A Lei muda tudo", "Novo decreto saiu", "Fique de olho no prazo",
+    "Faltam dias", "Leia o inciso", "Veja o § único", "Veja o ART 5",
+])
+def test_gancho_rejeita_conteudo_juridico(gancho):
+    assert ia.gancho_legenda("t", "l", ClienteFalso(gancho)) == ""
+
+
+def test_gancho_aceita_palavras_parecidas():
+    assert ia.gancho_legenda("t", "l", ClienteFalso("Participar é mais simples")) == "Participar é mais simples"
+    assert ia.gancho_legenda("t", "l", ClienteFalso("Sua empresa pode ganhar")) != ""
+
+
+def test_resumo_com_numero_inventado_cai_no_fallback():
+    obj = "Aquisição de cadeiras para a escola"
+    assert ia.resumir_objeto(obj, ClienteFalso("Compra de 500 cadeiras")) == ia.encurtar(obj, 90)
+
+
+def test_resumo_com_numero_presente_no_objeto_passa():
+    obj = "Aquisição de 500 cadeiras para a escola"
+    assert ia.resumir_objeto(obj, ClienteFalso("Compra de 500 cadeiras")) == "Compra de 500 cadeiras"

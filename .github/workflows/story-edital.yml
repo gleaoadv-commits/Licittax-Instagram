@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   executar:
+    if: github.event_name == 'workflow_dispatch' || vars.AGENTE_ATIVO == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -45,7 +46,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODO_ENSAIO: ${{ inputs.ensaio && '1' || '0' }}
       - name: Guardar artes do ensaio
-        if: ${{ inputs.ensaio }}
+        if: always() && inputs.ensaio
         uses: actions/upload-artifact@v4
         with:
           name: ensaio-story-edital

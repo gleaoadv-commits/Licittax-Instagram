@@ -99,7 +99,7 @@ def test_cache_baixa_uma_vez(html):
 @responses.activate
 def test_url_explicita_para_decreto():
     leis._CACHE.clear()
-    url = "https://exemplo.gov.br/decreto.htm"
+    url = "https://www.planalto.gov.br/decreto.htm"
     responses.add(responses.GET, url, body="<p>Art. 1º Do decreto.</p>".encode("utf-8"),
                   content_type="text/html; charset=utf-8")
     assert "Do decreto" in texto_artigo("Decreto 1/2020", "1", url=url)
@@ -118,3 +118,43 @@ def test_erro_de_rede_propaga():
     with pytest.raises(Exception) as e:
         texto_artigo("LC 123/2006", "3")
     assert not isinstance(e.value, ArtigoNaoEncontrado)
+
+
+def test_ignora_estilo_line_through():
+    h = ('<p>Art. 5º Vale <span style="text-decoration: line-through">revogado</span> isto.</p>'
+         '<p>Art. 6º Outro.</p>')
+    t = extrair_artigo(h, "5")
+    assert "revogado" not in t and "Vale" in t
+    h = '<p>Art. 5º Novo.</p><p style="TEXT-DECORATION:LINE-THROUGH">Parágrafo morto</p>'
+    assert "morto" not in extrair_artigo(h, "5")
+
+
+@responses.activate
+def test_norma_conhecida_ignora_url_do_modelo():
+    leis._CACHE.clear()
+    responses.add(responses.GET, leis.FONTES["LC 123/2006"],
+                  body="<p>Art. 3º Oficial.</p>".encode("utf-8"),
+                  content_type="text/html; charset=utf-8")
+    t = texto_artigo("LC 123/2006", "3", url="https://evil.example.com/x.htm")
+    assert "Oficial" in t
+    assert len(responses.calls) == 1 and responses.calls[0].request.url == leis.FONTES["LC 123/2006"]
+
+
+@pytest.mark.parametrize("url", [
+    "https://exemplo.gov.br/decreto.htm", "http://www.planalto.gov.br/d.htm",
+    "https://www.planalto.gov.br.evil.com/d.htm", "https://evil.com/www.planalto.gov.br/d.htm",
+    "ftp://www.planalto.gov.br/d.htm", "",
+])
+def test_decreto_com_url_fora_do_planalto_levanta(url):
+    with pytest.raises(ArtigoNaoEncontrado):
+        texto_artigo("Decreto 1/2020", "1", url=url)
+
+
+@responses.activate
+@pytest.mark.parametrize("host", ["www.planalto.gov.br", "planalto.gov.br"])
+def test_decreto_com_url_do_planalto_funciona(host):
+    leis._CACHE.clear()
+    url = f"https://{host}/ccivil_03/_ato/decreto/d1.htm"
+    responses.add(responses.GET, url, body="<p>Art. 1º Do decreto.</p>".encode("utf-8"),
+                  content_type="text/html; charset=utf-8")
+    assert "Do decreto" in texto_artigo("Decreto 1/2020", "1", url=url)

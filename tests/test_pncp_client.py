@@ -125,3 +125,12 @@ def test_sem_exclusividade_me_epp():
     responses.get("https://pncp.gov.br/api/pncp/v1/orgaos/07722779000106/compras/2026/151/itens",
                   json=itens)
     assert tem_item_exclusivo_me_epp(_edital(), espera=_sem_espera) is False
+
+
+@responses.activate
+@pytest.mark.parametrize("corpo", [{"data": []}, "texto", [1, 2], [None], 5])
+def test_itens_formato_inesperado_levanta_erropncp(corpo):
+    responses.get("https://pncp.gov.br/api/pncp/v1/orgaos/07722779000106/compras/2026/151/itens",
+                  json=corpo)
+    with pytest.raises(ErroPNCP):
+        tem_item_exclusivo_me_epp(_edital(), espera=_sem_espera)

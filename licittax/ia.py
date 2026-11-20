@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass
 
 import anthropic
@@ -141,12 +142,20 @@ def _chamar(cliente, modelo: str, sistema: str, prompt: str, max_tokens: int,
     return texto, getattr(resp, "stop_reason", None)
 
 
+def _numeros(texto: str) -> set[str]:
+    return set(re.findall(r"\d+", texto))
+
+
+_GANCHO_PROIBIDO = re.compile(
+    r"\d|%|R\$|§|(?<!\w)(?:art|artigo|lei|decreto|prazo|dias|inciso)(?!\w)", re.I)
+
+
 def resumir_objeto(objeto: str, cliente) -> str:
     try:
         texto, _ = _chamar(cliente, MODELO_RAPIDO, SISTEMA_RESUMO,
                            f"Objeto da licitação:\n{objeto}", 1024, "low")
         r = " ".join(texto.split())
-        if r and len(r) <= 90:
+        if r and len(r) <= 90 and _numeros(r) <= _numeros(objeto):
             return r
     except Exception:
         pass
@@ -159,7 +168,7 @@ def gancho_legenda(titulo: str, legenda_base: str, cliente) -> str:
                            f"Título do post: {titulo}\nLegenda base:\n{legenda_base}",
                            1024, "low")
         r = " ".join(texto.split())
-        if r and len(r) <= 150:
+        if r and len(r) <= 150 and not _GANCHO_PROIBIDO.search(r):
             return r
     except Exception:
         pass
@@ -177,7 +186,7 @@ def verificar_afirmacao(afirmacao: str, dispositivo: str, texto_lei: str, client
         prompt = (f"Dispositivo: {dispositivo}\n\nTEXTO DE LEI:\n{texto_lei}\n\n"
                   f"AFIRMAÇÃO:\n{afirmacao}\n\n"
                   "O texto de lei sustenta integralmente a afirmação?")
-        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_REVISOR, prompt, 2048,
+        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_REVISOR, prompt, 16000,
                                 "high", SCHEMA_VERIFICACAO)
         if parada in ("max_tokens", "refusal"):
             raise ValueError(f"resposta incompleta: {parada}")
@@ -205,7 +214,7 @@ def verificar_cobertura(textos_publicados: str, afirmacoes_verificadas: list[str
                   "O texto publicado contém alguma afirmação jurídica, prazo, valor, percentual "
                   "ou referência legal que NÃO esteja coberta pelas afirmações verificadas "
                   "listadas? Se sim, sustenta=false; se tudo está coberto, sustenta=true.")
-        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_COBERTURA, prompt, 2048,
+        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_COBERTURA, prompt, 16000,
                                 "high", SCHEMA_VERIFICACAO)
         if parada in ("max_tokens", "refusal"):
             raise ValueError(f"resposta incompleta: {parada}")
