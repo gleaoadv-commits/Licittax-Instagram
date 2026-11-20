@@ -1,0 +1,107 @@
+from dataclasses import replace
+
+from licittax.dicas.checagem import checar_dica
+from licittax.dicas.modelo import Afirmacao, Citacao, Dica, Slide
+from licittax.leis import ArtigoNaoEncontrado
+from licittax.ia import Verificacao
+
+CIT = Citacao("Lei 14.133/2021", "art. 55", "§ 1º", "http://x")
+
+
+def dica(**kw):
+    base = dict(
+        id="t1-01", trilha=1, titulo="Prazo de propostas",
+        slides=(Slide("a", ("1",)), Slide("b", ("2",)), Slide("c", ("3",))),
+        frase_story="Fique de olho nos prazos.", legenda_base="Legenda.",
+        afirmacoes=(Afirmacao("Prazo mínimo de 8 dias úteis.", CIT),), hashtags=("#licitacao",))
+    base.update(kw)
+    return Dica(**base)
+
+
+def texto_ok(norma, artigo, url=None):
+    return "texto da lei"
+
+
+def sim(afirmacao, dispositivo, texto, cliente):
+    return Verificacao(True, "ok")
+
+
+def nao(afirmacao, dispositivo, texto, cliente):
+    return Verificacao(False, "não confere")
+
+
+def test_aprova_dica_valida():
+    r = checar_dica(dica(), texto_ok, sim)
+    assert r.status == "aprovada"
+
+
+def test_descarta_afirmacao_sem_citacao():
+    d = dica(afirmacoes=(Afirmacao("x", None),))
+    r = checar_dica(d, texto_ok, sim)
+    assert r.status == "descartada" and "citação" in r.motivo
+
+
+def test_descarta_valor_em_reais_sem_decreto():
+    d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", CIT),))
+    assert checar_dica(d, texto_ok, sim).status == "descartada"
+    d = dica(afirmacoes=(Afirmacao("Limite de R$ 50 mil.", Citacao("Decreto 12.343/2024", "art. 1")),))
+    assert checar_dica(d, texto_ok, sim).status == "aprovada"
+
+
+def test_descarta_quando_verificador_nega():
+    assert checar_dica(dica(), texto_ok, nao).status == "descartada"
+
+
+def test_descarta_quando_artigo_nao_existe():
+    def falha(*a, **k):
+        raise ArtigoNaoEncontrado("x")
+    assert checar_dica(dica(), falha, sim).status == "descartada"
+
+
+def test_descarta_erro_de_rede():
+    def falha(*a, **k):
+        raise ConnectionError("fora")
+    r = checar_dica(dica(), falha, sim)
+    assert r.status == "descartada" and r.motivo
+
+
+def test_descarta_telefone_no_texto():
+    for d in (dica(frase_story="Ligue (31) 3157-6737"), dica(legenda_base="Fale 11 98765-4321"),
+              dica(slides=(Slide("a", ("tel 3157-6737",)),) * 3)):
+        assert checar_dica(d, texto_ok, sim).status == "descartada"
+
+
+def test_descarta_slides_fora_de_3_a_6():
+    s = Slide("a", ("1",))
+    assert checar_dica(dica(slides=(s, s)), texto_ok, sim).status == "descartada"
+    assert checar_dica(dica(slides=(s,) * 7), texto_ok, sim).status == "descartada"
+    assert checar_dica(dica(slides=(s,) * 6), texto_ok, sim).status == "aprovada"
+
+
+def test_descarta_titulos_longos():
+    assert checar_dica(dica(titulo="x" * 61), texto_ok, sim).status == "descartada"
+    assert checar_dica(dica(frase_story="x" * 121), texto_ok, sim).status == "descartada"
+
+
+def test_cliente_repassado():
+    vistos = []
+    def v(a, d, t, c):
+        vistos.append(c)
+        return Verificacao(True, "")
+    checar_dica(dica(), texto_ok, v, cliente="C")
+    assert vistos == ["C"]
+
+
+def test_nao_altera_original():
+    d = dica()
+    checar_dica(d, texto_ok, nao)
+    assert d.status == "pendente"
+
+
+def test_base_legal_sem_repeticao():
+    d = dica(afirmacoes=(
+        Afirmacao("a", Citacao("Lei 14.133/2021", "art. 55")),
+        Afirmacao("b", Citacao("LC 123/2006", "art. 48")),
+        Afirmacao("c", Citacao("Lei 14.133/2021", "art. 55")),
+        Afirmacao("d", None)))
+    assert d.base_legal() == "Lei 14.133/2021, art. 55; LC 123/2006, art. 48"
