@@ -464,6 +464,7 @@ def test_texto_gigante_estoura(tmp_path): ...           # título com 600 caract
 **Interfaces:**
 - Produces:
   - `hospedar(arquivos: list[Path], repo_dir: Path, repositorio: str, prefixo: str, git=subprocess.run, checar_url=..., espera=time.sleep) -> list[str]` — copia para `publicadas/<prefixo>/`, `git add` + `git commit -m "chore: imagens <prefixo>"` + `git pull --rebase` + `git push`; devolve `https://raw.githubusercontent.com/<repositorio>/main/publicadas/<prefixo>/<nome>`; aguarda cada URL responder 200 (até 60 s).
+  - `commitar(arquivos: list[Path], mensagem: str, repo_dir: Path, git=subprocess.run) -> None` — `git add` dos arquivos, `git commit -m mensagem`, `git pull --rebase`, `git push`; levanta `RuntimeError` se algum comando falhar. Usado por `hospedar` e pelo job `story_edital` (Task 9) para gravar `data/estado.json`.
   - `class ErroInstagram(Exception)`
   - ```python
     class Instagram:
