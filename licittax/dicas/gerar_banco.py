@@ -20,8 +20,8 @@ MIN_APROVADAS = 8
 
 def _inteiro_positivo(valor: str) -> int:
     n = int(valor)
-    if n < 0:
-        raise argparse.ArgumentTypeError("deve ser >= 0")
+    if n < 1:
+        raise argparse.ArgumentTypeError("deve ser >= 1")
     return n
 
 
@@ -115,12 +115,13 @@ def main(argv: list[str] | None = None) -> int:
                 descartadas += 1
             novas.append(r)
         print(f"Trilha {t.numero} ({t.nome}): {aprovadas} aprovadas, {descartadas} descartadas")
-        if aprovadas < args.min_aprovadas:
+        minimo = min(args.min_aprovadas, args.max_aprovadas - len(aprov_exist))
+        if aprovadas < minimo:
             falhou = True
             manter.add(t.numero)  # trilha fraca: mantem as dicas existentes
             resumo.append((t.numero, checadas, 0, len(aprov_exist)))
         else:
-            banco.extend(aprov_exist + novas)
+            banco.extend(da_trilha + novas)
             resumo.append((t.numero, checadas, aprovadas, len(aprov_exist) + aprovadas))
         salvar_parcial()
     print("\nResumo por trilha (checadas / aprovadas novas / total aprovadas no banco):")

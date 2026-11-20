@@ -139,3 +139,36 @@ def test_incremental_abaixo_do_minimo_mantem_e_sai_1(monkeypatch, tmp_path):
                         lambda d, cliente=None: replace(d, status="descartada", motivo="x"))
     assert gerar_banco.main(["--trilhas", "1", "--min-aprovadas", "1"]) == 1
     assert [d.id for d in carregar_banco(caminho)] == ["t1-01"]
+
+
+def test_incremental_preserva_descartada_existente_e_pula_titulo(monkeypatch, tmp_path):
+    existentes = [_dica("t1-01", 1), _dica("t1-02", 1, status="descartada")]
+    caminho = _preparar(monkeypatch, tmp_path, existentes,
+                        lambda *a: [dict(_bruta(0, 1), titulo="T1-02"), _bruta(5, 1)],
+                        lambda d, cliente=None: replace(d, status="aprovada", motivo="ok"))
+    assert gerar_banco.main(["--trilhas", "1", "--min-aprovadas", "1"]) == 0
+    final = carregar_banco(caminho)
+    assert [(d.id, d.status) for d in final] == [
+        ("t1-01", "aprovada"), ("t1-02", "descartada"), ("t1-03", "aprovada")]
+    # segunda rodada: titulo da descartada continua sendo ignorado
+    checadas = []
+    monkeypatch.setattr(gerar_banco, "gerar_dicas",
+                        lambda *a: [dict(_bruta(0, 1), titulo="t1-02")])
+    monkeypatch.setattr(gerar_banco, "checar_dica",
+                        lambda d, cliente=None: checadas.append(d) or d)
+    gerar_banco.main(["--trilhas", "1", "--min-aprovadas", "1"])
+    assert checadas == []
+
+
+def test_minimo_efetivo_perto_do_max(monkeypatch, tmp_path):
+    existentes = [_dica("t1-01", 1), _dica("t1-02", 1)]
+    _preparar(monkeypatch, tmp_path, existentes, lambda *a: [_bruta(i, 1) for i in range(3)],
+              lambda d, cliente=None: replace(d, status="aprovada", motivo="ok"))
+    # falta 1 para o max (3); min pedido 5 nao deve marcar falha
+    assert gerar_banco.main(["--trilhas", "1", "--max-aprovadas", "3", "--min-aprovadas", "5"]) == 0
+
+
+def test_zero_rejeitado():
+    import pytest
+    with pytest.raises(SystemExit):
+        gerar_banco.parse_args(["--candidatas", "0"])

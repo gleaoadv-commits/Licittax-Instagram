@@ -44,10 +44,10 @@ class Dica:
                 continue
             c = a.citacao
             artigo = c.artigo.strip()
-            if artigo and not re.match(r"art(\.|igo|s\.?)?\s", artigo, re.IGNORECASE):
+            if artigo and not re.match(r"art(igo|s)?\.?\s*\d", artigo, re.IGNORECASE):
                 artigo = f"art. {artigo}"
             item = ", ".join(p for p in (c.norma, artigo, c.dispositivo.strip()) if p)
-            if item not in vistos:
+            if item.casefold() not in {v.casefold() for v in vistos}:
                 vistos.append(item)
         return "; ".join(vistos)
 
