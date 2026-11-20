@@ -7,16 +7,18 @@ from licittax import ia
 
 
 class ClienteFalso:
-    def __init__(self, texto=None, erro=None):
-        self.texto, self.erro, self.chamadas = texto, erro, []
+    def __init__(self, texto=None, erro=None, parada="end_turn", respostas=None):
+        self.texto, self.erro, self.parada, self.chamadas = texto, erro, parada, []
+        self.respostas = list(respostas) if respostas else None
         self.messages = SimpleNamespace(create=self._create)
 
     def _create(self, **kw):
         self.chamadas.append(kw)
         if self.erro:
             raise self.erro
-        bloco = SimpleNamespace(type="text", text=self.texto)
-        return SimpleNamespace(content=[SimpleNamespace(type="thinking"), bloco], stop_reason="end_turn")
+        texto = self.respostas.pop(0) if self.respostas else self.texto
+        bloco = SimpleNamespace(type="text", text=texto)
+        return SimpleNamespace(content=[SimpleNamespace(type="thinking"), bloco], stop_reason=self.parada)
 
 
 def test_modelos():
@@ -101,3 +103,39 @@ def test_gerar_dicas_forca_pendente():
 def test_criar_cliente(monkeypatch):
     monkeypatch.setattr(ia.anthropic, "Anthropic", lambda api_key: ("cli", api_key))
     assert ia.criar_cliente({"ANTHROPIC_API_KEY": "k"}) == ("cli", "k")
+
+
+def _lote(n, trilha=1):
+    return json.dumps({"dicas": [{"id": "x", "trilha": trilha, "titulo": f"T{i}", "status": "aprovada"}
+                                 for i in range(n)]})
+
+
+def test_gerar_dicas_em_lotes():
+    c = ClienteFalso(respostas=[_lote(5), _lote(5), _lote(5)])
+    r = ia.gerar_dicas("Prazos", "temas", 12, c)
+    assert len(c.chamadas) == 3 and len(r) == 12
+    assert len({d["id"] for d in r}) == 12 and r[0]["id"] == "t1-01"
+    assert all(d["status"] == "pendente" for d in r)
+    assert "T0" in c.chamadas[1]["messages"][0]["content"]
+
+
+@pytest.mark.parametrize("parada", ["max_tokens", "refusal"])
+def test_gerar_dicas_parada_anormal(parada):
+    with pytest.raises(ia.ErroGeracaoDicas):
+        ia.gerar_dicas("P", "t", 3, ClienteFalso(_lote(3), parada=parada))
+
+
+def test_gerar_dicas_sem_chave_dicas():
+    with pytest.raises(ia.ErroGeracaoDicas):
+        ia.gerar_dicas("P", "t", 3, ClienteFalso('{"outra": []}'))
+
+
+def test_gerar_dicas_vazio_ou_nao_json():
+    for txt in ("", "nada"):
+        with pytest.raises(ia.ErroGeracaoDicas):
+            ia.gerar_dicas("P", "t", 3, ClienteFalso(txt))
+
+
+def test_verificacao_max_tokens_reprova():
+    c = ClienteFalso(json.dumps({"sustenta": True, "motivo": "ok"}), parada="max_tokens")
+    assert ia.verificar_afirmacao("a", "d", "t", c).sustenta is False

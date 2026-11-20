@@ -126,7 +126,7 @@ def encurtar(texto: str, limite: int) -> str:
 
 
 def _chamar(cliente, modelo: str, sistema: str, prompt: str, max_tokens: int,
-            esforco: str, schema: dict | None = None) -> str:
+            esforco: str, schema: dict | None = None) -> tuple[str, str | None]:
     saida: dict = {"effort": esforco}
     if schema is not None:
         saida["format"] = {"type": "json_schema", "schema": schema}
@@ -137,13 +137,15 @@ def _chamar(cliente, modelo: str, sistema: str, prompt: str, max_tokens: int,
         output_config=saida,
         messages=[{"role": "user", "content": prompt}],
     )
-    return "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+    texto = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+    return texto, getattr(resp, "stop_reason", None)
 
 
 def resumir_objeto(objeto: str, cliente) -> str:
     try:
-        r = " ".join(_chamar(cliente, MODELO_RAPIDO, SISTEMA_RESUMO,
-                             f"Objeto da licitação:\n{objeto}", 1024, "low").split())
+        texto, _ = _chamar(cliente, MODELO_RAPIDO, SISTEMA_RESUMO,
+                           f"Objeto da licitação:\n{objeto}", 1024, "low")
+        r = " ".join(texto.split())
         if r and len(r) <= 90:
             return r
     except Exception:
@@ -153,9 +155,10 @@ def resumir_objeto(objeto: str, cliente) -> str:
 
 def gancho_legenda(titulo: str, legenda_base: str, cliente) -> str:
     try:
-        r = " ".join(_chamar(cliente, MODELO_RAPIDO, SISTEMA_GANCHO,
-                             f"Título do post: {titulo}\nLegenda base:\n{legenda_base}",
-                             1024, "low").split())
+        texto, _ = _chamar(cliente, MODELO_RAPIDO, SISTEMA_GANCHO,
+                           f"Título do post: {titulo}\nLegenda base:\n{legenda_base}",
+                           1024, "low")
+        r = " ".join(texto.split())
         if r and len(r) <= 150:
             return r
     except Exception:
@@ -174,8 +177,10 @@ def verificar_afirmacao(afirmacao: str, dispositivo: str, texto_lei: str, client
         prompt = (f"Dispositivo: {dispositivo}\n\nTEXTO DE LEI:\n{texto_lei}\n\n"
                   f"AFIRMAÇÃO:\n{afirmacao}\n\n"
                   "O texto de lei sustenta integralmente a afirmação?")
-        bruto = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_REVISOR, prompt, 2048,
-                        "high", SCHEMA_VERIFICACAO)
+        bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_REVISOR, prompt, 2048,
+                                "high", SCHEMA_VERIFICACAO)
+        if parada in ("max_tokens", "refusal"):
+            raise ValueError(f"resposta incompleta: {parada}")
         dados = json.loads(bruto)
         if not isinstance(dados["sustenta"], bool) or not isinstance(dados["motivo"], str):
             raise ValueError("formato inválido")
@@ -184,12 +189,50 @@ def verificar_afirmacao(afirmacao: str, dispositivo: str, texto_lei: str, client
         return Verificacao(False, "erro na verificação")
 
 
-def gerar_dicas(trilha_nome: str, trilha_temas: str, quantidade: int, cliente) -> list[dict]:
+class ErroGeracaoDicas(Exception):
+    """Falha ao gerar dicas (truncamento, recusa ou resposta inválida)."""
+
+
+TAMANHO_LOTE = 5
+
+
+def _gerar_lote(trilha_nome: str, trilha_temas: str, quantidade: int,
+                existentes: list[str], cliente) -> list[dict]:
     prompt = PROMPT_DICAS.format(quantidade=quantidade, trilha_nome=trilha_nome,
                                  trilha_temas=trilha_temas)
-    bruto = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_DICAS, prompt, 16000, "high", SCHEMA_DICAS)
-    dicas = json.loads(bruto)["dicas"]
-    for d in dicas:
+    if existentes:
+        prompt += ("\n- Já existem dicas com estes títulos; não repita nem reformule os temas: "
+                   + "; ".join(existentes))
+    bruto, parada = _chamar(cliente, MODELO_RIGOROSO, SISTEMA_DICAS, prompt, 16000,
+                            "high", SCHEMA_DICAS)
+    if parada == "max_tokens":
+        raise ErroGeracaoDicas("A geração de dicas foi cortada por limite de tokens.")
+    if parada == "refusal":
+        raise ErroGeracaoDicas("O modelo recusou gerar as dicas.")
+    if not bruto:
+        raise ErroGeracaoDicas("A resposta do modelo veio vazia.")
+    try:
+        dados = json.loads(bruto)
+    except ValueError as e:
+        raise ErroGeracaoDicas("A resposta do modelo não é um JSON válido.") from e
+    if not isinstance(dados, dict) or not isinstance(dados.get("dicas"), list):
+        raise ErroGeracaoDicas('A resposta do modelo não contém a lista "dicas".')
+    if not all(isinstance(d, dict) for d in dados["dicas"]):
+        raise ErroGeracaoDicas("A lista de dicas contém itens inválidos.")
+    return dados["dicas"]
+
+
+def gerar_dicas(trilha_nome: str, trilha_temas: str, quantidade: int, cliente) -> list[dict]:
+    """Gera `quantidade` dicas em lotes de até 5 chamadas; ids e status são forçados."""
+    dicas: list[dict] = []
+    while len(dicas) < quantidade:
+        lote = _gerar_lote(trilha_nome, trilha_temas, min(TAMANHO_LOTE, quantidade - len(dicas)),
+                           [str(d.get("titulo", "")) for d in dicas], cliente)
+        if not lote:
+            raise ErroGeracaoDicas("O modelo não devolveu nenhuma dica no lote.")
+        dicas.extend(lote[: quantidade - len(dicas)])
+    for n, d in enumerate(dicas, start=1):
+        d["id"] = f"t{d.get('trilha', 0)}-{n:02d}"
         d["status"] = "pendente"
     return dicas
 
