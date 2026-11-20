@@ -51,7 +51,7 @@ def _limpar_antigas(repo_dir: Path, prefixo: str, dias: int = 7) -> None:
             continue
         try:
             if (ref - date.fromisoformat(mp.group(0))).days > dias:
-                shutil.rmtree(pasta)
+                shutil.rmtree(pasta, ignore_errors=True)
         except ValueError:
             continue
 

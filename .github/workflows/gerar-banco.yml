@@ -31,7 +31,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           set +e
-          python -m licittax.dicas.gerar_banco
+          timeout 330m python -m licittax.dicas.gerar_banco
           rc=$?
           set -e
           git add data/banco_dicas.json
@@ -39,6 +39,7 @@ jobs:
             echo "Nenhuma alteracao no banco."
           else
             git commit -m "chore: atualizar banco de dicas"
-            git pull --rebase && git push
+            git pull --rebase
+            git push
           fi
           exit $rc

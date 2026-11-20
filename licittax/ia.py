@@ -147,7 +147,7 @@ def _numeros(texto: str) -> set[str]:
 
 
 _GANCHO_PROIBIDO = re.compile(
-    r"\d|%|R\$|§|(?<!\w)(?:art|artigo|lei|decreto|prazo|dias|inciso)(?!\w)", re.I)
+    r"\d|%|R\$|§|(?<!\w)(?:art|artigo|lei|decreto|prazo|dias|inciso)s?(?!\w)", re.I)
 
 
 def resumir_objeto(objeto: str, cliente) -> str:

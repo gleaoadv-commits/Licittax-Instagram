@@ -83,7 +83,7 @@ Os fluxos agendados (Story de edital, Post de dica, Story de dica, Checar token)
 1. No repositório, aba **Actions**.
 2. Escolha o fluxo na lista à esquerda (Story de edital, Post de dica, Story de dica, Checar token, Gerar banco de dicas).
 3. Clique em **Run workflow**.
-4. Nos fluxos de publicação aparece a caixa **Ensaio**. **Marcada**: gera as imagens e a legenda, mas **não publica nada**; as imagens ficam no fim da página da execução, em **Artifacts** (baixe o .zip). **Desmarcada**: publica de verdade.
+4. Nos fluxos Story de edital, Post de dica e Story de dica (somente nesses três) aparece a caixa **Ensaio**. **Marcada**: gera as imagens e a legenda, mas **não publica nada**; as imagens ficam no fim da página da execução, em **Artifacts** (baixe o .zip). **Desmarcada**: publica de verdade.
 
 ## 7. Onde ver falhas
 

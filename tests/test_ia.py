@@ -169,7 +169,7 @@ def test_verificadores_usam_16000_tokens():
 @pytest.mark.parametrize("gancho", [
     "Você sabia que são 8 dias?", "Ganhe 20% de vantagem", "Limite de R$ mil", "Veja o art. 55",
     "O artigo importa", "A Lei muda tudo", "Novo decreto saiu", "Fique de olho no prazo",
-    "Faltam dias", "Leia o inciso", "Veja o § único", "Veja o ART 5",
+    "Faltam dias", "As leis mudaram", "Os decretos", "Veja os prazos", "Artigos novos", "Os incisos", "Leia o inciso", "Veja o § único", "Veja o ART 5",
 ])
 def test_gancho_rejeita_conteudo_juridico(gancho):
     assert ia.gancho_legenda("t", "l", ClienteFalso(gancho)) == ""
