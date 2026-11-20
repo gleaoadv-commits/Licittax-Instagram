@@ -1,0 +1,44 @@
+name: Gerar banco de dicas
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: licittax-publicacao
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Configurar git
+        run: |
+          git config user.name "licittax-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Gerar dicas e commitar o banco (mesmo se parcial)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set +e
+          python -m licittax.dicas.gerar_banco
+          rc=$?
+          set -e
+          git add data/banco_dicas.json
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteracao no banco."
+          else
+            git commit -m "chore: atualizar banco de dicas"
+            git push
+          fi
+          exit $rc

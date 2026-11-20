@@ -1,0 +1,44 @@
+name: Checar token
+
+on:
+  schedule:
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+    inputs:
+      ensaio:
+        description: "Ensaio (gera as artes, mas nao publica nem altera nada)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: licittax-publicacao
+  cancel-in-progress: false
+
+jobs:
+  executar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Configurar git
+        run: |
+          git config user.name "licittax-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Rodar Checar token
+        run: python -m licittax.jobs.checar_token
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          META_APP_ID: ${{ secrets.META_APP_ID }}
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MODO_ENSAIO: ${{ inputs.ensaio && '1' || '0' }}
