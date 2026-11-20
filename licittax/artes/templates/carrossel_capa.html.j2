@@ -1,0 +1,17 @@
+{% extends "_base.html.j2" %}
+{% from "_partes.html.j2" import rodape, icone_svg with context %}
+{% block classe %}feed capa{% endblock %}
+{% block conteudo %}
+<main class="tela">
+  <div class="tags"><span class="tag">VOCÊ SABIA?</span></div>
+  <div class="miolo ajustar">
+    <h1 class="titulo ajustar">{{ titulo }}</h1>
+    <div class="arraste">Arraste para o lado {{ icone_svg("direita") }}</div>
+  </div>
+  <div class="base-fixa">
+    <div class="divisoria"></div>
+    {{ rodape() }}
+  </div>
+</main>
+<div class="contador">{{ "%02d"|format(pagina) }} / {{ "%02d"|format(total) }}</div>
+{% endblock %}

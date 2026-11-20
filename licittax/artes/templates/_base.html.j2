@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+{% include "base.css" %}
+</style>
+</head>
+<body class="{% block classe %}{% endblock %}">
+<div class="arco"></div>
+{% block conteudo %}{% endblock %}
+<div class="faixa-base"></div>
+</body>
+</html>

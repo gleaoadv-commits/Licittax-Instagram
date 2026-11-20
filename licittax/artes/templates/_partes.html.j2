@@ -1,0 +1,33 @@
+{% macro rodape() %}
+<footer class="rodape">
+  <img src="{{ icone }}" alt="">
+  <div>
+    <div class="arroba">@licittax</div>
+    <div class="assinatura">Assessoria &amp; Consultoria em Licitações</div>
+  </div>
+</footer>
+{% endmacro %}
+
+{% macro chamada(cta, whatsapp) %}
+<div class="chamada">
+  <div class="cta ajustar">{{ cta }}</div>
+  <div class="zap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.4A8.4 8.4 0 1 1 21 11.5z"/><path d="M9 8.6c0 3.3 3 6.4 6.4 6.4l1.1-1.6-2-1-1 .8c-1-.4-2.3-1.7-2.7-2.7l.8-1-1-2z" fill="#FFFFFF" stroke-width="1"/></svg>
+    <span>WhatsApp {{ whatsapp }}</span>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro icone_svg(nome) %}
+{% if nome == "local" %}
+<svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>
+{% elif nome == "valor" %}
+<svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9.5v5M18 9.5v5"/></svg>
+{% elif nome == "data" %}
+<svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+{% elif nome == "direita" %}
+<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1F8A7A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+{% elif nome == "baixo" %}
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M6 13l6 6 6-6"/></svg>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,22 @@
+{% extends "_base.html.j2" %}
+{% from "_partes.html.j2" import rodape with context %}
+{% block classe %}feed slide{% endblock %}
+{% block conteudo %}
+<main class="tela">
+  <div class="tags"><span class="tag">VOCÊ SABIA?</span></div>
+  <div class="miolo ajustar">
+    <h1 class="titulo ajustar">{{ titulo }}</h1>
+    <ol class="itens">
+      {% for item in itens %}
+      <li><span class="num">{{ loop.index }}</span><span class="texto">{{ item }}</span></li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div class="base-fixa">
+    {% if base_legal %}<p class="base-legal ajustar">Base legal: {{ base_legal }}</p>{% endif %}
+    <div class="divisoria"></div>
+    {{ rodape() }}
+  </div>
+</main>
+<div class="contador">{{ "%02d"|format(pagina) }} / {{ "%02d"|format(total) }}</div>
+{% endblock %}

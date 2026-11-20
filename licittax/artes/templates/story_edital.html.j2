@@ -1,0 +1,25 @@
+{% extends "_base.html.j2" %}
+{% from "_partes.html.j2" import rodape, chamada, icone_svg with context %}
+{% block classe %}story edital{% endblock %}
+{% block conteudo %}
+<main class="tela">
+  <div class="tags">
+    <span class="tag">EDITAL NOVO</span>
+    {% if exclusivo %}<span class="tag selo">EXCLUSIVO ME/EPP</span>{% endif %}
+  </div>
+  <div class="miolo ajustar">
+    <div class="orgao ajustar">{{ orgao }}</div>
+    <h1 class="titulo ajustar">{{ titulo }}</h1>
+    <ul class="detalhes">
+      {% if local %}<li><span class="ico">{{ icone_svg("local") }}</span><span class="texto">{{ local }}</span></li>{% endif %}
+      {% if valor %}<li><span class="ico">{{ icone_svg("valor") }}</span><span class="texto">Valor estimado: <b>{{ valor }}</b></span></li>{% endif %}
+      {% if prazo %}<li><span class="ico">{{ icone_svg("data") }}</span><span class="texto">Propostas até: <b>{{ prazo }}</b></span></li>{% endif %}
+    </ul>
+  </div>
+  <div class="base-fixa">
+    <div class="divisoria"></div>
+    {{ rodape() }}
+  </div>
+</main>
+{{ chamada(cta, whatsapp) }}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "_base.html.j2" %}
+{% from "_partes.html.j2" import rodape, chamada with context %}
+{% block classe %}story dica{% endblock %}
+{% block conteudo %}
+<main class="tela">
+  <div class="tags"><span class="tag">DICA RÁPIDA</span></div>
+  <div class="miolo frase-area ajustar">
+    <p class="frase">{{ frase }}</p>
+    {% if base_legal %}<p class="base-legal">Base legal: {{ base_legal }}</p>{% endif %}
+  </div>
+  <div class="base-fixa">
+    <div class="divisoria"></div>
+    {{ rodape() }}
+  </div>
+</main>
+{{ chamada(cta, whatsapp) }}
+{% endblock %}
