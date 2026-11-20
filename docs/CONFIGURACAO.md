@@ -85,6 +85,17 @@ Os fluxos agendados (Story de edital, Post de dica, Story de dica, Checar token)
 3. Clique em **Run workflow**.
 4. Nos fluxos Story de edital, Post de dica e Story de dica (somente nesses três) aparece a caixa **Ensaio**. **Marcada**: gera as imagens e a legenda, mas **não publica nada**; as imagens ficam no fim da página da execução, em **Artifacts** (baixe o .zip). **Desmarcada**: publica de verdade.
 
+### Gerar o banco de dicas aos poucos (gasta pouco crédito)
+
+O fluxo **Gerar banco de dicas** pede à IA e cada checagem custa crédito. Para gastar pouco, rode uma trilha por vez e com poucas candidatas:
+
+1. Aba **Actions** → **Gerar banco de dicas** → **Run workflow**.
+2. Preencha os campos, por exemplo: `trilhas` = `1`, `candidatas` = `6`, `max_aprovadas` = `6`, `min_aprovadas` = `1`.
+3. Clique em **Run workflow** e espere terminar. As dicas novas aprovadas são **somadas** às que já existem (nada é apagado, e títulos repetidos são ignorados antes de checar, o que economiza crédito).
+4. Repita com `trilhas` = `2`, depois `3`, e assim por diante. Para duas trilhas de uma vez: `1,3`.
+
+Significado dos campos: `trilhas` = quais trilhas gerar (padrão: todas, `1,2,3,4,5,6`); `candidatas` = quantas dicas a IA propõe por trilha (padrão 20); `max_aprovadas` = para de checar quando a trilha chega a esse total de aprovadas (padrão 15); `min_aprovadas` = mínimo de aprovadas novas; abaixo disso a execução é marcada como falha e a trilha fica como estava (padrão 8; em rodadas pequenas use `1`). No fim, o log mostra um resumo por trilha.
+
 ## 7. Onde ver falhas
 
 - Aba **Actions**: execuções com um X vermelho falharam. Clique nela e abra o passo em vermelho para ler a mensagem (em português).

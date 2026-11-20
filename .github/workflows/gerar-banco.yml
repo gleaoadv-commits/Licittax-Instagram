@@ -2,6 +2,23 @@ name: Gerar banco de dicas
 
 on:
   workflow_dispatch:
+    inputs:
+      trilhas:
+        description: "Trilhas a gerar, separadas por virgula (ex.: 1,3)"
+        type: string
+        default: "1,2,3,4,5,6"
+      candidatas:
+        description: "Candidatas geradas por trilha"
+        type: string
+        default: "20"
+      max_aprovadas:
+        description: "Parar ao atingir este total de aprovadas na trilha"
+        type: string
+        default: "15"
+      min_aprovadas:
+        description: "Minimo de aprovadas novas; abaixo disso a trilha conta como falha"
+        type: string
+        default: "8"
 
 permissions:
   contents: write
@@ -29,9 +46,15 @@ jobs:
       - name: Gerar dicas e commitar o banco (mesmo se parcial)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TRILHAS: ${{ inputs.trilhas }}
+          CANDIDATAS: ${{ inputs.candidatas }}
+          MAX_APROVADAS: ${{ inputs.max_aprovadas }}
+          MIN_APROVADAS: ${{ inputs.min_aprovadas }}
         run: |
           set +e
-          timeout 330m python -m licittax.dicas.gerar_banco
+          timeout 330m python -m licittax.dicas.gerar_banco \
+            --trilhas "$TRILHAS" --candidatas "$CANDIDATAS" \
+            --max-aprovadas "$MAX_APROVADAS" --min-aprovadas "$MIN_APROVADAS"
           rc=$?
           set -e
           git add data/banco_dicas.json
