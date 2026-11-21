@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from licittax import hospedagem, ia, instagram
+from licittax import estado, hospedagem, ia, instagram
 from licittax.artes import render
 from licittax.config import Config, carregar_config
 from licittax.dicas.banco import carregar_banco, dica_do_dia
@@ -82,6 +82,27 @@ def etapa(descricao: str, fn: Callable, *args, **kw):
         raise
     except Exception as e:  # noqa: BLE001
         raise FalhaJob(f"falha em '{descricao}': {type(e).__name__}: {e}") from e
+
+
+def caminho_estado(deps: Deps) -> Path:
+    return deps.raiz / "data" / "estado.json"
+
+
+def ja_feito_hoje(deps: Deps, marca: str, nome: str) -> bool:
+    """Os workflows tem horarios de reserva; se um horario anterior ja publicou, nao repete."""
+    if estado.ja_publicado(caminho_estado(deps), marca):
+        print(f"[{nome}] '{marca}' ja foi publicado hoje; nada a fazer.")
+        return True
+    return False
+
+
+def registrar_publicacao(deps: Deps, marca: str, extras=()) -> None:
+    try:
+        estado.marcar_publicado(caminho_estado(deps), marca)
+        deps.commitar([caminho_estado(deps), *extras], f"chore: publicado {marca}", deps.raiz)
+    except Exception as e:
+        raise FalhaJob("a publicacao FOI feita, mas falhou em 'gravar estado': "
+                       f"{type(e).__name__}: {e}") from e
 
 
 def dica_de_hoje(deps: Deps, cfg: Config, hoje: date):

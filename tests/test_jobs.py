@@ -241,3 +241,28 @@ def test_dicas_avancam_so_nos_dias_de_post(tmp_path):
     assert d(0) != d(2) != d(4)
     assert d(0) != d(4)
     assert d(0) == d(1)  # dia sem post: idx 1 nao e dia de post (mesma posicao, nao usada)
+
+
+def test_horario_de_reserva_nao_publica_de_novo(tmp_path):
+    _banco(tmp_path)
+    deps, ig, _ = fazer(tmp_path)
+    for job in (story_edital, post_dica, story_dica):
+        assert job.main(AGORA, deps) == 0
+        assert job.main(AGORA + timedelta(hours=2), deps) == 0
+    assert len(ig.stories) == 2 and len(ig.carrosseis) == 1
+
+
+def test_falha_no_primeiro_horario_reserva_tenta_de_novo(tmp_path):
+    deps, ig, _ = fazer(tmp_path, ig=IG(falha=True))
+    assert story_edital.main(AGORA, deps) == 1
+    ig.falha = False
+    assert story_edital.main(AGORA + timedelta(hours=2), deps) == 0
+    assert len(ig.stories) == 1
+
+
+def test_story_da_tarde_nao_confunde_com_edital_da_manha(tmp_path):
+    deps, ig, _ = fazer(tmp_path)
+    amanha = AGORA + timedelta(days=1)  # dia sem post: tarde publica 2o edital
+    assert story_edital.main(amanha, deps) == 0
+    assert story_dica.main(amanha + timedelta(hours=9), deps) == 0
+    assert len(ig.stories) == 2

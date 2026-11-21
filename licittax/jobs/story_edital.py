@@ -6,17 +6,21 @@ from licittax.artes.render import TextoEstourado
 from licittax.datas import hoje_brasilia, ontem_brasilia
 from licittax.estado import carregar_estado, salvar_estado
 from licittax.ia import encurtar
-from licittax.jobs.comum import Deps, FalhaJob, agora, etapa, executar
+from licittax.jobs.comum import (Deps, FalhaJob, agora, etapa, executar, ja_feito_hoje,
+                                  registrar_publicacao)
 from licittax.pncp.selecao import NenhumEditalError
 
 
 def publicar_edital(agora_utc: datetime | None, deps: Deps, sufixo: str = "") -> None:
     """Fluxo do story de edital. sufixo (ex.: '-tarde') separa prefixo de hospedagem e arquivo de ensaio."""
     cfg = deps.config()
-    if not cfg.ensaio:
-        deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
     agora_utc = agora(agora_utc)
     hoje, ontem = hoje_brasilia(agora_utc), ontem_brasilia(agora_utc)
+    marca = f"{hoje}-edital{sufixo}"
+    if not cfg.ensaio:
+        if ja_feito_hoje(deps, marca, "story_edital"):
+            return
+        deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
     caminho_estado = deps.raiz / "data" / "estado.json"
     estado = etapa("ler estado", carregar_estado, caminho_estado)
 
@@ -62,10 +66,10 @@ def publicar_edital(agora_utc: datetime | None, deps: Deps, sufixo: str = "") ->
     try:
         estado.add(escolha.edital.numero_controle)
         salvar_estado(estado, caminho_estado)
-        deps.commitar([caminho_estado], f"chore: estado {hoje}", deps.raiz)
     except Exception as e:
         raise FalhaJob("o story FOI publicado, mas falhou em 'gravar estado': "
                        f"{type(e).__name__}: {e}") from e
+    registrar_publicacao(deps, marca)
 
 
 def main(agora_utc: datetime | None = None, deps: Deps | None = None) -> int:

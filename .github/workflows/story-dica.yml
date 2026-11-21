@@ -2,7 +2,10 @@ name: Story da tarde (dica ou edital)
 
 on:
   schedule:
-    - cron: "0 21 * * *"
+    # Brasilia: 18h07, reservas 19h37 e 21h07. O GitHub atrasa/perde disparos; a reserva so publica se o anterior nao publicou.
+    - cron: "7 21 * * *"
+    - cron: "37 22 * * *"
+    - cron: "7 0 * * *"
   workflow_dispatch:
     inputs:
       ensaio:
@@ -24,6 +27,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main  # pega o estado mais recente (marca de ja publicado)
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

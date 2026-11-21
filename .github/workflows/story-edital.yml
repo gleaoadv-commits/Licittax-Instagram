@@ -2,7 +2,10 @@ name: Story de edital
 
 on:
   schedule:
-    - cron: "0 12 * * *"
+    # Brasilia: 9h17, reservas 11h07 e 14h27. O GitHub atrasa/perde disparos; a reserva so publica se o anterior nao publicou.
+    - cron: "17 12 * * *"
+    - cron: "7 14 * * *"
+    - cron: "27 17 * * *"
   workflow_dispatch:
     inputs:
       ensaio:
@@ -24,6 +27,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main  # pega o estado mais recente (marca de ja publicado)
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

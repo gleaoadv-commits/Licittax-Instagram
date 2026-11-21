@@ -3,7 +3,8 @@ import sys
 from datetime import datetime
 
 from licittax.datas import eh_dia_de_post, hoje_brasilia
-from licittax.jobs.comum import Deps, agora, dica_de_hoje, etapa, executar
+from licittax.jobs.comum import (Deps, agora, dica_de_hoje, etapa, executar, ja_feito_hoje,
+                                  registrar_publicacao)
 from licittax.legenda import montar_legenda
 
 
@@ -13,7 +14,10 @@ def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     if not eh_dia_de_post(hoje, cfg.inicio_rotacao):
         print("Hoje não é dia de post.")
         return
+    marca = f"{hoje}-post"
     if not cfg.ensaio:
+        if ja_feito_hoje(deps, marca, "post_dica"):
+            return
         deps.exigir_segredos("IG_USER_ID", "IG_TOKEN", "GITHUB_REPOSITORY")
     dica = dica_de_hoje(deps, cfg, hoje)
     pasta = deps.saida()
@@ -32,6 +36,7 @@ def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     ig = deps.criar_instagram(cfg, deps.env)
     etapa("publicar carrossel", ig.publicar_carrossel, urls, legenda)
     print(f"[post_dica] carrossel publicado: dica {dica.id}")
+    registrar_publicacao(deps, marca)
 
 
 def main(agora_utc: datetime | None = None, deps: Deps | None = None) -> int:

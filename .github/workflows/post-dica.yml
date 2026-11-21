@@ -2,7 +2,10 @@ name: Post de dica
 
 on:
   schedule:
-    - cron: "0 15 * * *"
+    # Brasilia: 12h13, reservas 13h43 e 15h53. O GitHub atrasa/perde disparos; a reserva so publica se o anterior nao publicou.
+    - cron: "13 15 * * *"
+    - cron: "43 16 * * *"
+    - cron: "53 18 * * *"
   workflow_dispatch:
     inputs:
       ensaio:
@@ -24,6 +27,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main  # pega o estado mais recente (marca de ja publicado)
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
