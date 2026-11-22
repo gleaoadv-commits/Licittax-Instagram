@@ -7,103 +7,61 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: planta baixa de escritório vista de cima — salas por departamento, mesas com os agentes. */
+/* Layout: planta do escritorio vista de cima (canvas) + fichas de status e livro de ponto abaixo. */
 :root{
-  --chao:#e9e2d3; --parede:#3b3f55; --sala:#f6f1e6; --linha:#cfc5b0;
-  --tinta:#23253a; --suave:#6b6a7a;
-  --ok:#2f8a57; --alerta:#c27a12; --erro:#c23b3b; --ativo:#3d6fd8;
+  --fundo:#1f2233; --painel:#2a2e45; --linha:#3c4160; --tinta:#eef0f7; --suave:#a3a8c3;
+  --ok:#4cc38a; --alerta:#e5a93a; --erro:#ff6b6b; --ativo:#6ea8ff;
   --pixel:"Silkscreen", ui-monospace, monospace; --texto:"Inter", system-ui, sans-serif;
-  color-scheme:light;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--chao);color:var(--tinta);font:15px/1.5 var(--texto);
-  background-image:linear-gradient(var(--linha) 1px,transparent 1px),linear-gradient(90deg,var(--linha) 1px,transparent 1px);
-  background-size:32px 32px}
-.topo{background:var(--parede);color:#f6f1e6;padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.topo-in{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between}
-h1{font:400 22px/1.2 var(--pixel);margin:0;letter-spacing:.02em}
-.relogio{font:400 14px var(--pixel);opacity:.85;font-variant-numeric:tabular-nums}
-main{max-width:1080px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
-.sala{background:var(--sala);border:4px solid var(--parede);border-radius:2px;padding:16px;display:grid;gap:14px;min-width:0}
-.sala h2{font:400 16px var(--pixel);margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.porta{font:500 12px var(--texto);background:var(--parede);color:#f6f1e6;padding:2px 8px;border-radius:2px}
-.mesas{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.mesa{border:2px solid var(--linha);background:#fffdf8;padding:12px;display:grid;gap:8px;min-width:0;position:relative}
-.mesa[data-estado="trabalhando"]{border-color:var(--ativo)}
-.mesa[data-estado="erro"],.mesa[data-estado="atrasado"]{border-color:var(--erro)}
-.cena{height:120px;display:flex;justify-content:center;align-items:flex-end}
-.cena svg{height:120px;width:auto;image-rendering:pixelated}
-.nome{font:400 13px var(--pixel);margin:0}
-.funcao{font-size:13px;color:var(--suave);margin:0}
-.status{font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
-.status::before{content:"";width:10px;height:10px;flex:none;background:var(--suave)}
-[data-estado="trabalhando"] .status::before{background:var(--ativo);animation:pisca 1s steps(2) infinite}
-[data-estado="feito"] .status::before{background:var(--ok)}
-[data-estado="erro"] .status::before,[data-estado="atrasado"] .status::before{background:var(--erro)}
-[data-estado="aguardando"] .status::before{background:var(--alerta)}
-.detalhe{font-size:13px;color:var(--suave);margin:0}
-.vazias{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-.vazia{background:repeating-linear-gradient(45deg,var(--sala),var(--sala) 10px,#efe8d8 10px,#efe8d8 20px);border:4px dashed var(--linha);padding:16px;display:grid;gap:6px}
-.vazia h2{font:400 14px var(--pixel);margin:0;color:var(--suave)}
-.vazia p{margin:0;font-size:13px;color:var(--suave)}
-.diario{background:#fffdf8;border:4px solid var(--parede);padding:16px;min-width:0}
-.diario h2{font:400 14px var(--pixel);margin:0 0 10px}
+html,body{background:var(--fundo)}
+body{margin:0;color:var(--tinta);font:15px/1.5 var(--texto)}
+.wrap{max-width:1180px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline;justify-content:space-between}
+h1{font:400 22px/1.2 var(--pixel);margin:0}
+.relogio{font:400 14px var(--pixel);color:var(--suave);font-variant-numeric:tabular-nums}
+.planta{overflow-x:auto;border:4px solid var(--linha);background:#000;border-radius:2px}
+canvas{display:block;width:100%;min-width:760px;image-rendering:pixelated;cursor:pointer}
+.fichas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.ficha{background:var(--painel);border:2px solid var(--linha);padding:12px;display:grid;gap:4px;min-width:0}
+.ficha[data-estado="trabalhando"]{border-color:var(--ativo)}
+.ficha[data-estado="erro"],.ficha[data-estado="atrasado"]{border-color:var(--erro)}
+.ficha .nome{font:400 13px var(--pixel);margin:0;display:flex;gap:8px;align-items:center}
+.ficha .cor{width:12px;height:12px;flex:none}
+.ficha .status{font-weight:600;font-size:14px;margin:0}
+[data-estado="trabalhando"] .status{color:var(--ativo)}
+[data-estado="feito"] .status{color:var(--ok)}
+[data-estado="aguardando"] .status{color:var(--alerta)}
+[data-estado="erro"] .status,[data-estado="atrasado"] .status{color:var(--erro)}
+.ficha .detalhe{font-size:13px;color:var(--suave);margin:0}
+.diario{background:var(--painel);border:2px solid var(--linha);padding:14px;min-width:0}
+.diario h2{font:400 14px var(--pixel);margin:0 0 8px}
 .diario ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 .diario li{display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:13px;border-bottom:1px solid var(--linha);padding-bottom:6px}
 .diario time{font-variant-numeric:tabular-nums;color:var(--suave)}
 .aviso{font-size:13px;color:var(--suave);margin:0}
-.braco{animation:digita .35s steps(2) infinite}
-.zzz{animation:sobe 2.4s steps(6) infinite}
-.tela{fill:#26304a}
-[data-estado="trabalhando"] .tela{fill:#7fb2ff;animation:pisca .6s steps(2) infinite}
-@keyframes digita{50%{transform:translateY(-2px)}}
-@keyframes pisca{50%{opacity:.45}}
-@keyframes sobe{0%{opacity:0;transform:translate(0,4px)}30%{opacity:1}100%{opacity:0;transform:translate(4px,-10px)}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 @media (max-width:440px){.diario li{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header class="topo"><div class="topo-in">
-  <h1>Escritório Licittax</h1>
-  <span class="relogio" id="relogio">--:--</span>
-</div></header>
-
-<main>
-  <section class="sala" aria-labelledby="mkt">
-    <h2 id="mkt">Marketing <span class="porta">Instagram @licittax</span></h2>
-    <div class="mesas" id="mesas"></div>
-    <p class="aviso" id="aviso">Carregando o expediente…</p>
-  </section>
-
-  <div class="vazias">
-    <div class="vazia"><h2>Comercial</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
-    <div class="vazia"><h2>Licitações</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
-    <div class="vazia"><h2>Financeiro</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
-  </div>
-
-  <section class="diario" aria-labelledby="diario-t">
-    <h2 id="diario-t">Livro de ponto</h2>
-    <ol id="diario"></ol>
-  </section>
-</main>
+<div class="wrap">
+  <header>
+    <h1>Escritório Licittax</h1>
+    <span class="relogio" id="relogio">--:--</span>
+  </header>
+  <div class="planta"><canvas id="cena" width="1280" height="768" aria-label="Planta do escritório com os agentes trabalhando"></canvas></div>
+  <p class="aviso" id="aviso">Carregando o expediente…</p>
+  <div class="fichas" id="fichas"></div>
+  <section class="diario"><h2>Livro de ponto</h2><ol id="diario"></ol></section>
+</div>
 
 <script>
 const REPO = "gleaoadv-commits/Licittax-Instagram";
 const INICIO_ROTACAO = "2026-11-21";
 const TZ = "America/Sao_Paulo";
 
-const AGENTES = [
-  {id:"story-edital.yml", nome:"Caçador de Editais", funcao:"Acha um edital no PNCP e posta o story da manhã",
-   camisa:"#3d6fd8", h:9, m:17, quando:()=>true, marca:d=>[`${d}-edital`]},
-  {id:"post-dica.yml", nome:"Designer do Carrossel", funcao:"Monta e publica o carrossel com a dica do dia",
-   camisa:"#c2559a", h:12, m:13, quando:d=>diaDePost(d), marca:d=>[`${d}-post`]},
-  {id:"story-dica.yml", nome:"Contador de Histórias", funcao:"Posta o story da tarde (dica ou segundo edital)",
-   camisa:"#2f8a57", h:18, m:7, quando:()=>true, marca:d=>[`${d}-story-dica`,`${d}-edital-tarde`]},
-  {id:"checar-token.yml", nome:"Guardião do Token", funcao:"Toda segunda confere se o acesso ao Instagram vai vencer",
-   camisa:"#c27a12", h:8, m:7, quando:d=>diaSemana(d)===1, marca:null},
-];
-
+/* ---------- datas ---------- */
 function agoraBR(){
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"})
     .formatToParts(new Date()).map(x=>[x.type,x.value]));
@@ -114,98 +72,310 @@ const diaDePost = d => Math.round((new Date(d+"T12:00:00Z")-new Date(INICIO_ROTA
 const somaDias = (d,n) => new Date(new Date(d+"T12:00:00Z").getTime()+n*864e5).toISOString().slice(0,10);
 const hora = (h,m) => `${h}h${String(m).padStart(2,"0")}`;
 const dataBR = iso => new Intl.DateTimeFormat("pt-BR",{timeZone:TZ,day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(iso));
-const dataBRdia = iso => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(iso));
+const diaBR = iso => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(iso));
 const NOMES_DIA = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+
+/* ---------- agentes ---------- */
+const AGENTES = [
+  {id:"story-edital.yml", nome:"Caçador de Editais", curto:"Caçador", camisa:"#4f7fe8", cabelo:"#2b1d14", pele:"#e8b48a",
+   h:9, m:17, quando:()=>true, marca:d=>[`${d}-edital`], mesa:[3,3],
+   falas:{trabalhando:["Buscando no PNCP…","Achei um pregão!","Montando o story…"], feito:["Edital de hoje já foi!","Story da manhã no ar."], aguardando:["Às 9h17 eu caço editais."], folga:["Hoje é folga."]}},
+  {id:"post-dica.yml", nome:"Designer do Carrossel", curto:"Designer", camisa:"#d45fa6", cabelo:"#6b3a1e", pele:"#c98e64",
+   h:12, m:13, quando:d=>diaDePost(d), marca:d=>[`${d}-post`], mesa:[8,3],
+   falas:{trabalhando:["Desenhando os slides…","Escrevendo a legenda…","Publicando o carrossel!"], feito:["Carrossel publicado!","A dica de hoje ficou boa."], aguardando:["Carrossel sai 12h13."], folga:["Hoje não tem carrossel.","Amanhã é minha vez."]}},
+  {id:"story-dica.yml", nome:"Contador de Histórias", curto:"Contador", camisa:"#3fae74", cabelo:"#111111", pele:"#8d5a3b",
+   h:18, m:7, quando:()=>true, marca:d=>[`${d}-story-dica`,`${d}-edital-tarde`], mesa:[13,3],
+   falas:{trabalhando:["Preparando o story da tarde…","Quase pronto!"], feito:["Story da tarde no ar!"], aguardando:["Às 18h07 é comigo."], folga:["Hoje é folga."]}},
+  {id:"checar-token.yml", nome:"Guardião do Token", curto:"Guardião", camisa:"#e5a93a", cabelo:"#9a9a9a", pele:"#f0c9a0",
+   h:8, m:7, quando:d=>diaSemana(d)===1, marca:null, mesa:[8,7],
+   falas:{trabalhando:["Conferindo o acesso…"], feito:["Token em dia!"], aguardando:["Segunda eu confiro o token."], folga:["Segunda eu confiro o token.","Acesso ao Instagram ok."]}},
+];
+const PAPO = [["Café?","Bora!"],["Bom trabalho hoje!","Valeu!"],["Tudo certo por aí?","Tudo em ordem."],["Reunião rapidinha?","Fechado."],["Viu o story de hoje?","Ficou ótimo!"]];
 
 function proximoTurno(a, hoje, minAgora){
   for(let i=0;i<9;i++){
     const d = somaDias(hoje,i);
     if(!a.quando(d)) continue;
     if(i===0 && minAgora >= a.h*60+a.m) continue;
-    const quando = i===0 ? "hoje" : i===1 ? "amanhã" : NOMES_DIA[diaSemana(d)];
-    return `${quando} às ${hora(a.h,a.m)}`;
+    return `${i===0?"hoje":i===1?"amanhã":NOMES_DIA[diaSemana(d)]} às ${hora(a.h,a.m)}`;
   }
   return "em breve";
 }
 
-function boneco(cor, estado){
-  const pele="#e8b48a", cabelo="#3a2a22";
-  const trabalhando = estado==="trabalhando";
-  const dormindo = estado==="aguardando" || estado==="folga";
-  const balao = estado==="feito" ? `<rect x="30" y="2" width="12" height="10" fill="#2f8a57"/><path d="M33 7l2 2 4-4" stroke="#fff" stroke-width="1.6" fill="none"/>`
-    : (estado==="erro"||estado==="atrasado") ? `<rect x="30" y="2" width="12" height="10" fill="#c23b3b"/><rect x="35" y="4" width="2" height="4" fill="#fff"/><rect x="35" y="9" width="2" height="2" fill="#fff"/>`
-    : dormindo ? `<text class="zzz" x="31" y="10" font-family="Silkscreen,monospace" font-size="7" fill="#6b6a7a">z</text>` : "";
-  const cabeca = dormindo ? `transform="rotate(12 22 16)"` : "";
-  return `<svg viewBox="0 0 48 52" aria-hidden="true" shape-rendering="crispEdges">
-    ${balao}
-    <g ${cabeca}><rect x="17" y="8" width="10" height="10" fill="${pele}"/><rect x="16" y="6" width="12" height="4" fill="${cabelo}"/>
-    <rect x="19" y="12" width="2" height="2" fill="#23253a"/><rect x="24" y="12" width="2" height="2" fill="#23253a"/></g>
-    <rect x="15" y="19" width="14" height="14" fill="${cor}"/>
-    <g class="${trabalhando?"braco":""}"><rect x="11" y="24" width="5" height="4" fill="${cor}"/><rect x="28" y="24" width="5" height="4" fill="${cor}"/>
-    <rect x="9" y="28" width="4" height="3" fill="${pele}"/><rect x="31" y="28" width="4" height="3" fill="${pele}"/></g>
-    <rect x="4" y="33" width="40" height="4" fill="#8a6a4a"/><rect x="6" y="37" width="3" height="15" fill="#6d5238"/><rect x="39" y="37" width="3" height="15" fill="#6d5238"/>
-    <rect x="30" y="22" width="14" height="11" fill="#23253a"/><rect class="tela" x="31" y="23" width="12" height="8"/>
-    <rect x="35" y="33" width="4" height="0" fill="#23253a"/>
-  </svg>`;
+/* ---------- mapa (40 x 24 tiles) ---------- */
+const T=16, W=40, H=24, S=2;
+const PAREDE=1, BLOQ=2;
+const grade = Array.from({length:H},()=>Array(W).fill(0));
+const salas = [
+  {nome:"MARKETING", x0:1,y0:1,x1:18,y1:9, piso:["#c9a274","#bf9868"]},
+  {nome:"REUNIÕES", x0:20,y0:1,x1:28,y1:9, piso:["#5a6a8c","#566684"]},
+  {nome:"COPA", x0:30,y0:1,x1:38,y1:9, piso:["#e6e1d6","#d3cdbf"], xadrez:true},
+  {nome:"", x0:1,y0:11,x1:38,y1:13, piso:["#8b8f9e","#868a99"]},
+  {nome:"COMERCIAL", x0:1,y0:15,x1:12,y1:22, piso:["#6e6a63","#69655e"], vaga:true},
+  {nome:"LICITAÇÕES", x0:14,y0:15,x1:25,y1:22, piso:["#6e6a63","#69655e"], vaga:true},
+  {nome:"FINANCEIRO", x0:27,y0:15,x1:38,y1:22, piso:["#6e6a63","#69655e"], vaga:true},
+];
+for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(x===0||y===0||x===W-1||y===H-1) grade[y][x]=PAREDE;
+for(let x=0;x<W;x++){ grade[10][x]=PAREDE; grade[14][x]=PAREDE; }
+for(let y=0;y<=10;y++){ grade[y][19]=PAREDE; grade[y][29]=PAREDE; }
+for(let y=14;y<H;y++){ grade[y][13]=PAREDE; grade[y][26]=PAREDE; }
+for(const x of [9,10]) grade[10][x]=0;
+for(const x of [24,25]) grade[10][x]=0;
+for(const x of [34,35]) grade[10][x]=0;
+for(const x of [6,19,32]) grade[14][x]=0;
+
+const moveis = [];
+function movel(tipo,x,y,w,h,extra={}){ moveis.push({tipo,x,y,w,h,...extra}); for(let j=0;j<h;j++) for(let i=0;i<w;i++) grade[y+j][x+i]=BLOQ; }
+AGENTES.forEach(a=>movel("mesa",a.mesa[0],a.mesa[1],2,1,{dono:a}));
+movel("planta",17,1,1,1); movel("planta",1,1,1,1); movel("estante",3,9,3,1); movel("estante",12,9,3,1);
+movel("mesaReuniao",22,4,5,3);
+movel("balcao",30,1,6,1); movel("cafeteira",36,1,1,1); movel("geladeira",38,1,1,2);
+movel("sofa",31,8,4,1); movel("mesinha",32,6,2,1);
+movel("planta",20,1,1,1); movel("planta",28,1,1,1);
+movel("bebedouro",38,11,1,1); movel("planta",1,11,1,1);
+movel("mesa",5,18,2,1,{vaga:true}); movel("mesa",18,18,2,1,{vaga:true}); movel("mesa",31,18,2,1,{vaga:true});
+
+const PONTOS = {
+  cafe:[[36,2],[35,2],[37,2]], reuniao:[[22,3],[24,3],[26,3],[22,7],[24,7],[26,7]],
+  sofa:[[31,9],[32,9],[33,9],[34,9]], bebedouro:[[37,11],[38,12]],
+};
+const livre = (x,y)=> x>=0&&y>=0&&x<W&&y<H&&grade[y][x]===0;
+
+function caminho(sx,sy,tx,ty){
+  if(!livre(tx,ty)) return null;
+  const key=(x,y)=>y*W+x, prev=new Map([[key(sx,sy),null]]), fila=[[sx,sy]];
+  while(fila.length){
+    const [x,y]=fila.shift();
+    if(x===tx&&y===ty){ const p=[]; let k=key(x,y); while(k!==null){ p.unshift([k%W,Math.floor(k/W)]); k=prev.get(k);} return p.slice(1); }
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=x+dx, ny=y+dy, k=key(nx,ny);
+      if(livre(nx,ny)&&!prev.has(k)){ prev.set(k,key(x,y)); fila.push([nx,ny]); }
+    }
+  }
+  return null;
 }
 
-let estadoPub = new Set();
+/* ---------- estado vindo do GitHub ---------- */
+let RUNS=[], PUB=new Set(), STATUS={};
 async function carregar(){
-  const a = agoraBR();
-  document.getElementById("relogio").textContent = `Brasília ${a.hm}`;
-  let runs = [];
+  const a=agoraBR();
   try{
-    const [r, e] = await Promise.all([
+    const [r,e]=await Promise.all([
       fetch(`https://api.github.com/repos/${REPO}/actions/runs?per_page=50`).then(x=>{if(!x.ok) throw new Error(x.status); return x.json();}),
       fetch(`https://raw.githubusercontent.com/${REPO}/main/data/estado.json?t=${Date.now()}`).then(x=>x.ok?x.json():{}).catch(()=>({})),
     ]);
-    runs = r.workflow_runs || [];
-    estadoPub = new Set(e.publicacoes || []);
-    document.getElementById("aviso").textContent = `Atualizado às ${a.hm}. A página se atualiza sozinha a cada 2 minutos.`;
+    RUNS=r.workflow_runs||[]; PUB=new Set(e.publicacoes||[]);
+    document.getElementById("aviso").textContent=`Status real lido do GitHub às ${a.hm}; atualiza a cada 2 minutos. Andar, café e conversas são animação; sentar para trabalhar acontece de verdade nos horários.`;
   }catch(err){
-    document.getElementById("aviso").textContent = "Não consegui falar com o GitHub agora. Tento de novo em 2 minutos.";
+    document.getElementById("aviso").textContent="Não consegui falar com o GitHub agora. Tento de novo em 2 minutos.";
   }
-  desenhar(runs, a);
+  calcularStatus(); fichas();
+}
+function calcularStatus(){
+  const a=agoraBR(), hoje=a.data;
+  for(const ag of AGENTES){
+    const meus=RUNS.filter(r=>r.path&&r.path.endsWith(ag.id));
+    const ativo=meus.find(r=>r.status!=="completed");
+    const ultimo=meus.find(r=>r.status==="completed"&&r.conclusion!=="skipped"&&r.conclusion!=="cancelled");
+    const turno=ag.h*60+ag.m;
+    const publicou= ag.marca ? ag.marca(hoje).some(m=>PUB.has(m)) : !!(ultimo&&diaBR(ultimo.created_at)===hoje&&ultimo.conclusion==="success");
+    let e,s,d;
+    if(ativo){e="trabalhando";s="Trabalhando agora";d="Começou às "+dataBR(ativo.created_at).slice(-5);}
+    else if(!ag.quando(hoje)){e="folga";s="De folga hoje";d="Volta "+proximoTurno(ag,hoje,a.min);}
+    else if(publicou){e="feito";s=ag.marca?"Publicou hoje":"Conferiu hoje: tudo certo";d="Próximo turno: "+proximoTurno(ag,hoje,a.min);}
+    else if(a.min<turno){e="aguardando";s="Aguardando o horário";d="Entra "+proximoTurno(ag,hoje,a.min);}
+    else if(ultimo&&ultimo.conclusion==="failure"&&diaBR(ultimo.created_at)===hoje){e="erro";s="Deu erro";d=a.min<turno+40?`Tenta de novo às ${hora(ag.h,ag.m+40)}`:"Precisa de ajuda: me chame no Claude";}
+    else if(a.min<turno+90){e="aguardando";s="Batendo o ponto";d=`O disparo das ${hora(ag.h,ag.m)} está a caminho`;}
+    else {e="atrasado";s="Não publicou hoje";d="Precisa de ajuda: me chame no Claude";}
+    STATUS[ag.id]={estado:e,status:s,detalhe:d};
+  }
+}
+function fichas(){
+  document.getElementById("fichas").innerHTML=AGENTES.map(ag=>{const st=STATUS[ag.id]; return `<article class="ficha" data-estado="${st.estado}">
+    <p class="nome"><span class="cor" style="background:${ag.camisa}"></span>${ag.nome}</p>
+    <p class="status">${st.status}</p><p class="detalhe">${st.detalhe}</p></article>`;}).join("");
+  const nomes=Object.fromEntries(AGENTES.map(x=>[x.id,x.nome]));
+  const itens=RUNS.filter(r=>r.path&&nomes[r.path.split("/").pop()]&&r.conclusion!=="skipped"&&r.conclusion!=="cancelled").slice(0,10).map(r=>{
+    const o=r.status!=="completed"?"está trabalhando":r.conclusion==="success"?"terminou o turno":"teve um erro";
+    return `<li><time>${dataBR(r.created_at)}</time><span>${nomes[r.path.split("/").pop()]} ${o}</span></li>`;});
+  document.getElementById("diario").innerHTML=itens.join("")||"<li><span>Nenhum registro ainda.</span></li>";
 }
 
-function desenhar(runs, a){
-  const hoje = a.data;
-  const mesas = AGENTES.map(ag=>{
-    const meus = runs.filter(r=>r.path && r.path.endsWith(ag.id));
-    const ativo = meus.find(r=>r.status!=="completed");
-    const ultimo = meus.find(r=>r.status==="completed" && r.conclusion!=="skipped" && r.conclusion!=="cancelled");
-    const trabalhaHoje = ag.quando(hoje);
-    const turno = ag.h*60+ag.m;
-    const publicou = ag.marca ? ag.marca(hoje).some(m=>estadoPub.has(m)) : (ultimo && dataBRdia(ultimo.created_at)===hoje && ultimo.conclusion==="success");
-    let estado, status, detalhe;
-    if(ativo){ estado="trabalhando"; status="Trabalhando agora"; detalhe="Começou às "+dataBR(ativo.created_at).slice(-5); }
-    else if(!trabalhaHoje){ estado="folga"; status="De folga hoje"; detalhe="Volta "+proximoTurno(ag,hoje,a.min); }
-    else if(publicou){ estado="feito"; status = ag.marca ? "Publicou hoje" : "Conferiu hoje: tudo certo"; detalhe="Próximo turno: "+proximoTurno(ag,hoje,a.min); }
-    else if(a.min < turno){ estado="aguardando"; status="Aguardando o horário"; detalhe="Entra "+proximoTurno(ag,hoje,a.min); }
-    else if(ultimo && ultimo.conclusion==="failure" && dataBRdia(ultimo.created_at)===hoje){ estado="erro"; status="Deu erro"; detalhe = a.min < turno+40 ? `Tenta de novo às ${hora(ag.h,ag.m+40)}` : "Precisa de ajuda: me chame no Claude"; }
-    else if(a.min < turno+90){ estado="aguardando"; status="Batendo o ponto"; detalhe="O disparo das "+hora(ag.h,ag.m)+" está a caminho"; }
-    else { estado="atrasado"; status="Não publicou hoje"; detalhe="Precisa de ajuda: me chame no Claude"; }
-    return `<article class="mesa" data-estado="${estado}">
-      <div class="cena">${boneco(ag.camisa, estado)}</div>
-      <p class="nome">${ag.nome}</p>
-      <p class="funcao">${ag.funcao}</p>
-      <p class="status">${status}</p>
-      <p class="detalhe">${detalhe}</p>
-    </article>`;
-  }).join("");
-  document.getElementById("mesas").innerHTML = mesas;
+/* ---------- simulacao ---------- */
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const pessoas=AGENTES.map((ag,i)=>{const sx=ag.mesa[0], sy=ag.mesa[1]+1; return {ag, tx:sx, ty:sy, x:sx*T, y:sy*T, rota:[], tarefa:{tipo:"mesa", ate:performance.now()+1500+i*900}, balao:null, passo:0, dir:"cima"};});
+const assento=p=>[p.ag.mesa[0],p.ag.mesa[1]+1];
+const noite=()=>{const m=agoraBR().min; return m<7*60||m>=22*60;};
 
-  const nomes = Object.fromEntries(AGENTES.map(x=>[x.id,x.nome]));
-  const itens = runs.filter(r=>r.path && nomes[r.path.split("/").pop()] && r.conclusion!=="skipped" && r.conclusion!=="cancelled").slice(0,12).map(r=>{
-    const quem = nomes[r.path.split("/").pop()];
-    const o = r.status!=="completed" ? "está trabalhando" : r.conclusion==="success" ? "terminou o turno" : "teve um erro";
-    return `<li><time>${dataBR(r.created_at)}</time><span>${quem} ${o}</span></li>`;
-  });
-  document.getElementById("diario").innerHTML = itens.join("") || "<li><span>Nenhum registro ainda.</span></li>";
+function irPara(p,x,y){ const r=caminho(p.tx,p.ty,x,y); if(r){p.rota=r; return true;} return false; }
+function falar(p,txt,ms=3200){ p.balao={txt,ate:performance.now()+ms}; }
+
+function decidir(p,agora){
+  const st=(STATUS[p.ag.id]||{estado:"aguardando"}).estado;
+  const [ax,ay]=assento(p);
+  if(st==="trabalhando"||st==="erro"||st==="atrasado"||noite()){
+    p.tarefa={tipo: st==="trabalhando"?"trabalhar": noite()?"dormir":"alerta", ate:agora+6000};
+    if(p.tx!==ax||p.ty!==ay) irPara(p,ax,ay);
+    return;
+  }
+  const r=Math.random();
+  if(r<0.35){ p.tarefa={tipo:"mesa",ate:agora+7000+Math.random()*6000}; irPara(p,ax,ay); }
+  else if(r<0.55){ p.tarefa={tipo:"cafe",ate:agora+5000}; const [x,y]=rnd(PONTOS.cafe); irPara(p,x,y); }
+  else if(r<0.68){ p.tarefa={tipo:"sofa",ate:agora+6000}; const [x,y]=rnd(PONTOS.sofa); irPara(p,x,y); }
+  else if(r<0.78){ p.tarefa={tipo:"reuniao",ate:agora+6000}; const [x,y]=rnd(PONTOS.reuniao); irPara(p,x,y); }
+  else {
+    const livres=pessoas.filter(o=>o!==p&&!["trabalhar","alerta","dormir","conversa","espera"].includes(o.tarefa.tipo)&&!o.rota.length);
+    if(!livres.length){ p.tarefa={tipo:"mesa",ate:agora+5000}; irPara(p,ax,ay); return; }
+    const o=rnd(livres);
+    const viz=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[o.tx+dx,o.ty+dy]).filter(([x,y])=>livre(x,y)&&!pessoas.some(q=>q.tx===x&&q.ty===y));
+    if(!viz.length||!irPara(p,...viz[0])){ p.tarefa={tipo:"mesa",ate:agora+4000}; return; }
+    o.tarefa={tipo:"espera",ate:agora+20000,com:p}; o.rota=[];
+    p.tarefa={tipo:"indo",com:o,ate:agora+20000};
+  }
 }
 
-carregar();
-setInterval(carregar, 120000);
+function atualizar(dt,agora){
+  for(const p of pessoas){
+    if(p.rota.length){
+      const [nx,ny]=p.rota[0], gx=nx*T, gy=ny*T, v=0.06*dt;
+      const dx=gx-p.x, dy=gy-p.y;
+      if(Math.abs(dx)>0) p.dir=dx>0?"dir":"esq"; else if(Math.abs(dy)>0) p.dir=dy>0?"baixo":"cima";
+      if(Math.abs(dx)<=v&&Math.abs(dy)<=v){ p.x=gx;p.y=gy;p.tx=nx;p.ty=ny;p.rota.shift(); }
+      else { p.x+=Math.sign(dx)*Math.min(v,Math.abs(dx)); p.y+=Math.sign(dy)*Math.min(v,Math.abs(dy)); }
+      p.passo+=dt;
+      continue;
+    }
+    const t=p.tarefa;
+    if(t.tipo==="indo"){
+      const o=t.com; const par=rnd(PAPO);
+      p.dir = o.tx>p.tx?"dir":o.tx<p.tx?"esq":o.ty>p.ty?"baixo":"cima";
+      o.dir = p.tx>o.tx?"dir":p.tx<o.tx?"esq":p.ty>o.ty?"baixo":"cima";
+      const st=STATUS[p.ag.id]?.estado||"aguardando";
+      const fala1 = Math.random()<0.5 ? par[0] : rnd(p.ag.falas[st]||par);
+      falar(p,fala1,3000);
+      const stO=STATUS[o.ag.id]?.estado||"aguardando";
+      setTimeout(()=>falar(o, fala1===par[0]?par[1]:rnd(o.ag.falas[stO]||["Boa!"]),3000),2600);
+      p.tarefa={tipo:"conversa",ate:agora+6500}; o.tarefa={tipo:"conversa",ate:agora+6500};
+      continue;
+    }
+    if(t.tipo==="trabalhar"||t.tipo==="mesa"||t.tipo==="alerta"||t.tipo==="dormir"){
+      const [ax,ay]=assento(p); if(p.tx===ax&&p.ty===ay) p.dir="cima";
+    }
+    if(t.tipo==="trabalhar"&&(!p.balao||p.balao.ate<agora)&&Math.random()<0.004) falar(p,rnd(p.ag.falas.trabalhando));
+    if(t.tipo==="alerta"&&(!p.balao||p.balao.ate<agora)) falar(p,"Preciso de ajuda!",4000);
+    if((t.tipo==="cafe"||t.tipo==="sofa")&&(!p.balao||p.balao.ate<agora)&&Math.random()<0.002){ const st=STATUS[p.ag.id]?.estado||"aguardando"; falar(p,rnd(p.ag.falas[st]||["…"])); }
+    if(agora>t.ate) decidir(p,agora);
+  }
+}
+
+/* ---------- desenho ---------- */
+const cv=document.getElementById("cena"), cx=cv.getContext("2d");
+cx.imageSmoothingEnabled=false;
+const R=(x,y,w,h,c)=>{cx.fillStyle=c;cx.fillRect(Math.round(x*S),Math.round(y*S),Math.round(w*S),Math.round(h*S));};
+
+function desenharMapa(agora){
+  R(0,0,W*T,H*T,"#2b2f45");
+  for(const s of salas) for(let y=s.y0;y<=s.y1;y++) for(let x=s.x0;x<=s.x1;x++){
+    const alt = s.xadrez ? (x+y)%2 : (y%2);
+    R(x*T,y*T,T,T,s.piso[alt]);
+    if(!s.xadrez&&!s.vaga) R(x*T,y*T+T-1,T,1,"rgba(0,0,0,.08)");
+  }
+  for(const [x,y] of [[9,10],[10,10],[24,10],[25,10],[34,10],[35,10],[6,14],[19,14],[32,14]]) R(x*T,y*T,T,T,"#8b8f9e");
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(grade[y][x]===PAREDE){ R(x*T,y*T,T,T,"#3b3f55"); R(x*T,y*T,T,4,"#555b7a"); }
+  R(22*T+4,4*T+4,0,0,"#000");
+  for(const m of moveis) desenharMovel(m,agora);
+  cx.textBaseline="top"; cx.font=`${7*S}px Silkscreen, monospace`;
+  for(const s of salas) if(s.nome){
+    cx.fillStyle = s.vaga ? "rgba(255,255,255,.55)" : "rgba(20,20,30,.55)";
+    const lx = s.nome==="MARKETING" ? 3*T : s.x0*T+3;
+    cx.fillText(s.nome,lx*S,(s.y0*T+3)*S);
+    if(s.vaga){ cx.fillStyle="rgba(255,255,255,.4)"; cx.font=`${6*S}px Silkscreen, monospace`; cx.fillText("VAGA ABERTA · SEM AGENTE",(s.x0*T+3)*S,(s.y0*T+14)*S); cx.font=`${7*S}px Silkscreen, monospace`; }
+  }
+}
+function desenharMovel(m,agora){
+  const x=m.x*T,y=m.y*T,w=m.w*T,h=m.h*T;
+  switch(m.tipo){
+    case "mesa":{
+      R(x,y+2,w,h-2,"#7a5236"); R(x,y+2,w,3,"#93653f"); R(x+1,y+h-1,w-2,1,"#4f3422");
+      const p = m.dono && pessoas.find(q=>q.ag===m.dono);
+      const trabalhando = p && STATUS[m.dono.id]?.estado==="trabalhando" && p.tx===m.x && p.ty===m.y+1;
+      const lig = trabalhando ? (Math.floor(agora/250)%2? "#9cc6ff":"#6ea8ff") : (m.vaga?"#2a2e45":"#33405e");
+      R(x+9,y-2,14,10,"#1e2130"); R(x+10,y-1,12,7,lig); R(x+15,y+8,2,2,"#1e2130");
+      R(x+3,y+5,5,3,"#e8e3d6");
+      R(x+11,y+h+2,10,9,m.vaga?"#4a4d5c":"#2e3550");
+      break;}
+    case "planta": R(x+4,y+9,8,6,"#9a5b3a"); R(x+2,y+1,12,9,"#3f9a57"); R(x+5,y,6,4,"#56b86d"); break;
+    case "estante": R(x,y+2,w,h-2,"#5d4230"); for(let i=0;i<w;i+=4) R(x+i+1,y+4,3,8,["#d45f5f","#5f8fd4","#e5c04a","#5fbf8a"][(i/4)%4]); break;
+    case "mesaReuniao": R(x,y,w,h,"#6b4a30"); R(x+2,y+2,w-4,h-4,"#7f5a3b"); R(x+w/2-6,y+h/2-4,12,8,"#e8e3d6"); break;
+    case "balcao": R(x,y,w,h,"#b9b2a3"); R(x,y,w,3,"#d6d0c3"); R(x+20,y+4,10,6,"#8fb7d6"); break;
+    case "cafeteira": R(x+2,y+1,12,14,"#2b2b2b"); R(x+4,y+3,8,4,"#c23b3b"); R(x+6,y+10,4,4,"#f2f2f2"); break;
+    case "geladeira": R(x+1,y,14,h,"#dfe3ea"); R(x+1,y+12,14,1,"#a9afba"); R(x+11,y+4,2,5,"#a9afba"); break;
+    case "sofa": R(x,y,w,h,"#9b3f4f"); R(x,y,w,5,"#b8505f"); break;
+    case "mesinha": R(x+2,y+3,w-4,h-6,"#7a5236"); break;
+    case "bebedouro": R(x+3,y+2,10,13,"#d9dde6"); R(x+4,y,8,5,"#8fc3ff"); break;
+  }
+}
+function desenharPessoa(p,agora){
+  const st=STATUS[p.ag.id]?.estado;
+  const andando=p.rota.length>0, pe=andando?Math.floor(p.passo/140)%2:0;
+  const x=p.x+3, y=p.y-6;
+  R(x+1,y+19,9,2,"rgba(0,0,0,.25)");
+  R(x+2,y+14,3,5+(pe?-1:0),"#2d3048"); R(x+6,y+14,3,5+(pe?0:-1),"#2d3048");
+  R(x+1,y+7,9,8,p.ag.camisa);
+  const bob = p.tarefa.tipo==="trabalhar" && !andando && Math.floor(agora/180)%2 ? 1 : 0;
+  R(x,y+8+bob,2,5,p.ag.camisa); R(x+9,y+8+bob,2,5,p.ag.camisa);
+  R(x+2,y,7,7,p.ag.pele);
+  if(p.dir==="cima"){ R(x+2,y,7,6,p.ag.cabelo); }
+  else { R(x+2,y,7,2,p.ag.cabelo);
+    if(p.tarefa.tipo==="dormir"&&!andando){ R(x+3,y+4,2,1,"#23253a"); R(x+6,y+4,2,1,"#23253a"); }
+    else if(p.dir==="baixo"){ R(x+3,y+3,1,2,"#23253a"); R(x+7,y+3,1,2,"#23253a"); }
+    else if(p.dir==="dir"){ R(x+7,y+3,1,2,"#23253a"); } else { R(x+3,y+3,1,2,"#23253a"); }
+  }
+  if(p.tarefa.tipo==="cafe"&&!andando){ R(x+10,y+9,3,4,"#f2f2f2"); R(x+10,y+9,3,1,"#6b3a1e"); }
+  if(p.tarefa.tipo==="dormir"&&!andando){ const f=(agora/600)%3; cx.fillStyle="#cfd6ff"; cx.font=`${6*S}px Silkscreen, monospace`; cx.fillText("z",(x+10+f*2)*S,(y-2-f*3)*S); }
+  if(st==="feito"&&!p.balao){ R(x+3,y-7,5,5,"#4cc38a"); R(x+4,y-5,1,1,"#fff"); R(x+5,y-4,1,1,"#fff"); R(x+6,y-6,1,2,"#fff"); }
+  if(st==="erro"||st==="atrasado"){ R(x+3,y-8,5,6,"#ff6b6b"); R(x+5,y-7,1,3,"#fff"); R(x+5,y-3,1,1,"#fff"); }
+  return [x+5,y];
+}
+function desenharBalao(p,ax,ay,agora){
+  if(!p.balao||p.balao.ate<agora){ p.balao=null; return; }
+  cx.font=`600 ${8*S}px Inter, system-ui, sans-serif`;
+  const tw=cx.measureText(p.balao.txt).width/S, bw=tw+8, bh=13;
+  let bx=Math.min(Math.max(ax-bw/2,2),W*T-bw-2), by=ay-bh-6;
+  R(bx,by,bw,bh,"#fffdf8"); R(bx,by+bh,bw,1,"rgba(0,0,0,.25)");
+  R(ax-2,by+bh,4,2,"#fffdf8"); R(ax-1,by+bh+2,2,2,"#fffdf8");
+  cx.fillStyle="#1f2233"; cx.textBaseline="middle"; cx.fillText(p.balao.txt,(bx+4)*S,(by+bh/2+.5)*S); cx.textBaseline="top";
+}
+function desenharNome(p,agora){
+  cx.font=`${5*S}px Silkscreen, monospace`;
+  const tw=cx.measureText(p.ag.curto).width/S, x=p.x+8-tw/2, y=p.y+16;
+  R(x-2,y-1,tw+4,8,"rgba(20,22,35,.7)");
+  cx.fillStyle="#eef0f7"; cx.fillText(p.ag.curto,x*S,y*S);
+}
+
+let ultimo=performance.now();
+function quadro(agora){
+  const dt=Math.min(64,agora-ultimo); ultimo=agora;
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches) atualizar(dt,agora);
+  cx.clearRect(0,0,cv.width,cv.height);
+  desenharMapa(agora);
+  const ordem=[...pessoas].sort((a,b)=>a.y-b.y);
+  const ancoras=ordem.map(p=>[p,desenharPessoa(p,agora)]);
+  if(noite()) R(0,0,W*T,H*T,"rgba(10,14,40,.45)");
+  for(const p of ordem) desenharNome(p,agora);
+  for(const [p,[ax,ay]] of ancoras) desenharBalao(p,ax,ay,agora);
+  document.getElementById("relogio").textContent=`Brasília ${agoraBR().hm}${noite()?" · expediente encerrado":""}`;
+  requestAnimationFrame(quadro);
+}
+
+cv.addEventListener("click",ev=>{
+  const r=cv.getBoundingClientRect(), mx=(ev.clientX-r.left)/r.width*W*T, my=(ev.clientY-r.top)/r.height*H*T;
+  for(const p of pessoas) if(mx>p.x&&mx<p.x+T&&my>p.y-8&&my<p.y+T){ const st=STATUS[p.ag.id]; if(st) falar(p,`${st.status}. ${st.detalhe}`,5000); }
+});
+
+
+carregar(); setInterval(carregar,120000);
+requestAnimationFrame(quadro);
 </script>
 </body>
 </html>
