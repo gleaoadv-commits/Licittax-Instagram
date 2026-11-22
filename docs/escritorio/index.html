@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Escritório Licittax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: planta baixa de escritório vista de cima — salas por departamento, mesas com os agentes. */
+:root{
+  --chao:#e9e2d3; --parede:#3b3f55; --sala:#f6f1e6; --linha:#cfc5b0;
+  --tinta:#23253a; --suave:#6b6a7a;
+  --ok:#2f8a57; --alerta:#c27a12; --erro:#c23b3b; --ativo:#3d6fd8;
+  --pixel:"Silkscreen", ui-monospace, monospace; --texto:"Inter", system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--chao);color:var(--tinta);font:15px/1.5 var(--texto);
+  background-image:linear-gradient(var(--linha) 1px,transparent 1px),linear-gradient(90deg,var(--linha) 1px,transparent 1px);
+  background-size:32px 32px}
+.topo{background:var(--parede);color:#f6f1e6;padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topo-in{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between}
+h1{font:400 22px/1.2 var(--pixel);margin:0;letter-spacing:.02em}
+.relogio{font:400 14px var(--pixel);opacity:.85;font-variant-numeric:tabular-nums}
+main{max-width:1080px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
+.sala{background:var(--sala);border:4px solid var(--parede);border-radius:2px;padding:16px;display:grid;gap:14px;min-width:0}
+.sala h2{font:400 16px var(--pixel);margin:0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.porta{font:500 12px var(--texto);background:var(--parede);color:#f6f1e6;padding:2px 8px;border-radius:2px}
+.mesas{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.mesa{border:2px solid var(--linha);background:#fffdf8;padding:12px;display:grid;gap:8px;min-width:0;position:relative}
+.mesa[data-estado="trabalhando"]{border-color:var(--ativo)}
+.mesa[data-estado="erro"],.mesa[data-estado="atrasado"]{border-color:var(--erro)}
+.cena{height:120px;display:flex;justify-content:center;align-items:flex-end}
+.cena svg{height:120px;width:auto;image-rendering:pixelated}
+.nome{font:400 13px var(--pixel);margin:0}
+.funcao{font-size:13px;color:var(--suave);margin:0}
+.status{font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
+.status::before{content:"";width:10px;height:10px;flex:none;background:var(--suave)}
+[data-estado="trabalhando"] .status::before{background:var(--ativo);animation:pisca 1s steps(2) infinite}
+[data-estado="feito"] .status::before{background:var(--ok)}
+[data-estado="erro"] .status::before,[data-estado="atrasado"] .status::before{background:var(--erro)}
+[data-estado="aguardando"] .status::before{background:var(--alerta)}
+.detalhe{font-size:13px;color:var(--suave);margin:0}
+.vazias{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.vazia{background:repeating-linear-gradient(45deg,var(--sala),var(--sala) 10px,#efe8d8 10px,#efe8d8 20px);border:4px dashed var(--linha);padding:16px;display:grid;gap:6px}
+.vazia h2{font:400 14px var(--pixel);margin:0;color:var(--suave)}
+.vazia p{margin:0;font-size:13px;color:var(--suave)}
+.diario{background:#fffdf8;border:4px solid var(--parede);padding:16px;min-width:0}
+.diario h2{font:400 14px var(--pixel);margin:0 0 10px}
+.diario ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.diario li{display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:13px;border-bottom:1px solid var(--linha);padding-bottom:6px}
+.diario time{font-variant-numeric:tabular-nums;color:var(--suave)}
+.aviso{font-size:13px;color:var(--suave);margin:0}
+.braco{animation:digita .35s steps(2) infinite}
+.zzz{animation:sobe 2.4s steps(6) infinite}
+.tela{fill:#26304a}
+[data-estado="trabalhando"] .tela{fill:#7fb2ff;animation:pisca .6s steps(2) infinite}
+@keyframes digita{50%{transform:translateY(-2px)}}
+@keyframes pisca{50%{opacity:.45}}
+@keyframes sobe{0%{opacity:0;transform:translate(0,4px)}30%{opacity:1}100%{opacity:0;transform:translate(4px,-10px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+@media (max-width:440px){.diario li{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="topo"><div class="topo-in">
+  <h1>Escritório Licittax</h1>
+  <span class="relogio" id="relogio">--:--</span>
+</div></header>
+
+<main>
+  <section class="sala" aria-labelledby="mkt">
+    <h2 id="mkt">Marketing <span class="porta">Instagram @licittax</span></h2>
+    <div class="mesas" id="mesas"></div>
+    <p class="aviso" id="aviso">Carregando o expediente…</p>
+  </section>
+
+  <div class="vazias">
+    <div class="vazia"><h2>Comercial</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
+    <div class="vazia"><h2>Licitações</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
+    <div class="vazia"><h2>Financeiro</h2><p>Sala vazia. Nenhum agente contratado ainda.</p></div>
+  </div>
+
+  <section class="diario" aria-labelledby="diario-t">
+    <h2 id="diario-t">Livro de ponto</h2>
+    <ol id="diario"></ol>
+  </section>
+</main>
+
+<script>
+const REPO = "gleaoadv-commits/Licittax-Instagram";
+const INICIO_ROTACAO = "2026-11-21";
+const TZ = "America/Sao_Paulo";
+
+const AGENTES = [
+  {id:"story-edital.yml", nome:"Caçador de Editais", funcao:"Acha um edital no PNCP e posta o story da manhã",
+   camisa:"#3d6fd8", h:9, m:17, quando:()=>true, marca:d=>[`${d}-edital`]},
+  {id:"post-dica.yml", nome:"Designer do Carrossel", funcao:"Monta e publica o carrossel com a dica do dia",
+   camisa:"#c2559a", h:12, m:13, quando:d=>diaDePost(d), marca:d=>[`${d}-post`]},
+  {id:"story-dica.yml", nome:"Contador de Histórias", funcao:"Posta o story da tarde (dica ou segundo edital)",
+   camisa:"#2f8a57", h:18, m:7, quando:()=>true, marca:d=>[`${d}-story-dica`,`${d}-edital-tarde`]},
+  {id:"checar-token.yml", nome:"Guardião do Token", funcao:"Toda segunda confere se o acesso ao Instagram vai vencer",
+   camisa:"#c27a12", h:8, m:7, quando:d=>diaSemana(d)===1, marca:null},
+];
+
+function agoraBR(){
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"})
+    .formatToParts(new Date()).map(x=>[x.type,x.value]));
+  return {data:`${p.year}-${p.month}-${p.day}`, min:+p.hour*60 + +p.minute, hm:`${p.hour}:${p.minute}`};
+}
+const diaSemana = d => new Date(d+"T12:00:00Z").getUTCDay();
+const diaDePost = d => Math.round((new Date(d+"T12:00:00Z")-new Date(INICIO_ROTACAO+"T12:00:00Z"))/864e5) % 2 === 0;
+const somaDias = (d,n) => new Date(new Date(d+"T12:00:00Z").getTime()+n*864e5).toISOString().slice(0,10);
+const hora = (h,m) => `${h}h${String(m).padStart(2,"0")}`;
+const dataBR = iso => new Intl.DateTimeFormat("pt-BR",{timeZone:TZ,day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(iso));
+const dataBRdia = iso => new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(iso));
+const NOMES_DIA = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+
+function proximoTurno(a, hoje, minAgora){
+  for(let i=0;i<9;i++){
+    const d = somaDias(hoje,i);
+    if(!a.quando(d)) continue;
+    if(i===0 && minAgora >= a.h*60+a.m) continue;
+    const quando = i===0 ? "hoje" : i===1 ? "amanhã" : NOMES_DIA[diaSemana(d)];
+    return `${quando} às ${hora(a.h,a.m)}`;
+  }
+  return "em breve";
+}
+
+function boneco(cor, estado){
+  const pele="#e8b48a", cabelo="#3a2a22";
+  const trabalhando = estado==="trabalhando";
+  const dormindo = estado==="aguardando" || estado==="folga";
+  const balao = estado==="feito" ? `<rect x="30" y="2" width="12" height="10" fill="#2f8a57"/><path d="M33 7l2 2 4-4" stroke="#fff" stroke-width="1.6" fill="none"/>`
+    : (estado==="erro"||estado==="atrasado") ? `<rect x="30" y="2" width="12" height="10" fill="#c23b3b"/><rect x="35" y="4" width="2" height="4" fill="#fff"/><rect x="35" y="9" width="2" height="2" fill="#fff"/>`
+    : dormindo ? `<text class="zzz" x="31" y="10" font-family="Silkscreen,monospace" font-size="7" fill="#6b6a7a">z</text>` : "";
+  const cabeca = dormindo ? `transform="rotate(12 22 16)"` : "";
+  return `<svg viewBox="0 0 48 52" aria-hidden="true" shape-rendering="crispEdges">
+    ${balao}
+    <g ${cabeca}><rect x="17" y="8" width="10" height="10" fill="${pele}"/><rect x="16" y="6" width="12" height="4" fill="${cabelo}"/>
+    <rect x="19" y="12" width="2" height="2" fill="#23253a"/><rect x="24" y="12" width="2" height="2" fill="#23253a"/></g>
+    <rect x="15" y="19" width="14" height="14" fill="${cor}"/>
+    <g class="${trabalhando?"braco":""}"><rect x="11" y="24" width="5" height="4" fill="${cor}"/><rect x="28" y="24" width="5" height="4" fill="${cor}"/>
+    <rect x="9" y="28" width="4" height="3" fill="${pele}"/><rect x="31" y="28" width="4" height="3" fill="${pele}"/></g>
+    <rect x="4" y="33" width="40" height="4" fill="#8a6a4a"/><rect x="6" y="37" width="3" height="15" fill="#6d5238"/><rect x="39" y="37" width="3" height="15" fill="#6d5238"/>
+    <rect x="30" y="22" width="14" height="11" fill="#23253a"/><rect class="tela" x="31" y="23" width="12" height="8"/>
+    <rect x="35" y="33" width="4" height="0" fill="#23253a"/>
+  </svg>`;
+}
+
+let estadoPub = new Set();
+async function carregar(){
+  const a = agoraBR();
+  document.getElementById("relogio").textContent = `Brasília ${a.hm}`;
+  let runs = [];
+  try{
+    const [r, e] = await Promise.all([
+      fetch(`https://api.github.com/repos/${REPO}/actions/runs?per_page=50`).then(x=>{if(!x.ok) throw new Error(x.status); return x.json();}),
+      fetch(`https://raw.githubusercontent.com/${REPO}/main/data/estado.json?t=${Date.now()}`).then(x=>x.ok?x.json():{}).catch(()=>({})),
+    ]);
+    runs = r.workflow_runs || [];
+    estadoPub = new Set(e.publicacoes || []);
+    document.getElementById("aviso").textContent = `Atualizado às ${a.hm}. A página se atualiza sozinha a cada 2 minutos.`;
+  }catch(err){
+    document.getElementById("aviso").textContent = "Não consegui falar com o GitHub agora. Tento de novo em 2 minutos.";
+  }
+  desenhar(runs, a);
+}
+
+function desenhar(runs, a){
+  const hoje = a.data;
+  const mesas = AGENTES.map(ag=>{
+    const meus = runs.filter(r=>r.path && r.path.endsWith(ag.id));
+    const ativo = meus.find(r=>r.status!=="completed");
+    const ultimo = meus.find(r=>r.status==="completed" && r.conclusion!=="skipped" && r.conclusion!=="cancelled");
+    const trabalhaHoje = ag.quando(hoje);
+    const turno = ag.h*60+ag.m;
+    const publicou = ag.marca ? ag.marca(hoje).some(m=>estadoPub.has(m)) : (ultimo && dataBRdia(ultimo.created_at)===hoje && ultimo.conclusion==="success");
+    let estado, status, detalhe;
+    if(ativo){ estado="trabalhando"; status="Trabalhando agora"; detalhe="Começou às "+dataBR(ativo.created_at).slice(-5); }
+    else if(!trabalhaHoje){ estado="folga"; status="De folga hoje"; detalhe="Volta "+proximoTurno(ag,hoje,a.min); }
+    else if(publicou){ estado="feito"; status = ag.marca ? "Publicou hoje" : "Conferiu hoje: tudo certo"; detalhe="Próximo turno: "+proximoTurno(ag,hoje,a.min); }
+    else if(a.min < turno){ estado="aguardando"; status="Aguardando o horário"; detalhe="Entra "+proximoTurno(ag,hoje,a.min); }
+    else if(ultimo && ultimo.conclusion==="failure" && dataBRdia(ultimo.created_at)===hoje){ estado="erro"; status="Deu erro"; detalhe = a.min < turno+40 ? `Tenta de novo às ${hora(ag.h,ag.m+40)}` : "Precisa de ajuda: me chame no Claude"; }
+    else if(a.min < turno+90){ estado="aguardando"; status="Batendo o ponto"; detalhe="O disparo das "+hora(ag.h,ag.m)+" está a caminho"; }
+    else { estado="atrasado"; status="Não publicou hoje"; detalhe="Precisa de ajuda: me chame no Claude"; }
+    return `<article class="mesa" data-estado="${estado}">
+      <div class="cena">${boneco(ag.camisa, estado)}</div>
+      <p class="nome">${ag.nome}</p>
+      <p class="funcao">${ag.funcao}</p>
+      <p class="status">${status}</p>
+      <p class="detalhe">${detalhe}</p>
+    </article>`;
+  }).join("");
+  document.getElementById("mesas").innerHTML = mesas;
+
+  const nomes = Object.fromEntries(AGENTES.map(x=>[x.id,x.nome]));
+  const itens = runs.filter(r=>r.path && nomes[r.path.split("/").pop()] && r.conclusion!=="skipped" && r.conclusion!=="cancelled").slice(0,12).map(r=>{
+    const quem = nomes[r.path.split("/").pop()];
+    const o = r.status!=="completed" ? "está trabalhando" : r.conclusion==="success" ? "terminou o turno" : "teve um erro";
+    return `<li><time>${dataBR(r.created_at)}</time><span>${quem} ${o}</span></li>`;
+  });
+  document.getElementById("diario").innerHTML = itens.join("") || "<li><span>Nenhum registro ainda.</span></li>";
+}
+
+carregar();
+setInterval(carregar, 120000);
+</script>
+</body>
+</html>
