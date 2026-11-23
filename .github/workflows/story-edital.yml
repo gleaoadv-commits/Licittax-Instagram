@@ -12,6 +12,10 @@ on:
         description: "Ensaio (gera as artes, mas nao publica nem altera nada)"
         type: boolean
         default: false
+      forcar:
+        description: "Publicar mesmo fora do horario (so para disparo manual)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -50,6 +54,7 @@ jobs:
           META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MODO_ENSAIO: ${{ inputs.ensaio && '1' || '0' }}
+          FORCAR: ${{ inputs.forcar && '1' || '0' }}
       - name: Guardar artes do ensaio
         if: always() && inputs.ensaio
         uses: actions/upload-artifact@v4

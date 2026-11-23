@@ -3,16 +3,19 @@ import sys
 from datetime import datetime
 
 from licittax.datas import eh_dia_de_post, hoje_brasilia
-from licittax.jobs.comum import (Deps, agora, dica_de_hoje, etapa, executar, ja_feito_hoje,
-                                  registrar_publicacao)
+from licittax.jobs.comum import (JANELA_TARDE, Deps, agora, dica_de_hoje, etapa, executar, fora_da_janela,
+                                  ja_feito_hoje, registrar_publicacao)
 from licittax.jobs.story_edital import publicar_edital
 
 
 def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     cfg = deps.config()
-    hoje = hoje_brasilia(agora(agora_utc))
+    agora_utc = agora(agora_utc)
+    if fora_da_janela(deps, cfg, agora_utc, JANELA_TARDE, "story_dica"):
+        return
+    hoje = hoje_brasilia(agora_utc)
     if not eh_dia_de_post(hoje, cfg.inicio_rotacao):
-        publicar_edital(agora_utc, deps, "-tarde")
+        publicar_edital(agora_utc, deps, "-tarde", janela=None)
         return
     marca = f"{hoje}-story-dica"
     if not cfg.ensaio:

@@ -10,6 +10,7 @@ from pathlib import Path
 from licittax import estado, hospedagem, ia, instagram
 from licittax.artes import render
 from licittax.config import Config, carregar_config
+from licittax.datas import BRASILIA
 from licittax.dicas.banco import carregar_banco, dica_do_dia
 from licittax.pncp import selecao
 
@@ -82,6 +83,24 @@ def etapa(descricao: str, fn: Callable, *args, **kw):
         raise
     except Exception as e:  # noqa: BLE001
         raise FalhaJob(f"falha em '{descricao}': {type(e).__name__}: {e}") from e
+
+
+# Janelas de horario (Brasilia, [inicio, fim) em horas). Disparo atrasado fora da janela nao publica.
+JANELA_EDITAL = (9, 15)
+JANELA_POST = (12, 18)
+JANELA_TARDE = (18, 23)
+
+
+def fora_da_janela(deps: Deps, cfg: Config, agora_utc: datetime, janela: tuple[int, int], nome: str) -> bool:
+    """True se nao e hora de publicar. Ensaio e disparo manual com FORCAR=1 ignoram a janela."""
+    if cfg.ensaio or deps.env.get("FORCAR") == "1":
+        return False
+    hora = agora_utc.astimezone(BRASILIA).hour
+    inicio, fim = janela
+    if inicio <= hora < fim:
+        return False
+    print(f"[{nome}] fora do horario ({hora}h; janela {inicio}h-{fim}h em Brasilia). Nada publicado.")
+    return True
 
 
 def caminho_estado(deps: Deps) -> Path:

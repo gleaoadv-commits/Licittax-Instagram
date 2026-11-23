@@ -6,15 +6,19 @@ from licittax.artes.render import TextoEstourado
 from licittax.datas import hoje_brasilia, ontem_brasilia
 from licittax.estado import carregar_estado, salvar_estado
 from licittax.ia import encurtar
-from licittax.jobs.comum import (Deps, FalhaJob, agora, etapa, executar, ja_feito_hoje,
-                                  registrar_publicacao)
+from licittax.jobs.comum import (JANELA_EDITAL, Deps, FalhaJob, agora, etapa, executar, fora_da_janela,
+                                  ja_feito_hoje, registrar_publicacao)
 from licittax.pncp.selecao import NenhumEditalError
 
 
-def publicar_edital(agora_utc: datetime | None, deps: Deps, sufixo: str = "") -> None:
-    """Fluxo do story de edital. sufixo (ex.: '-tarde') separa prefixo de hospedagem e arquivo de ensaio."""
+def publicar_edital(agora_utc: datetime | None, deps: Deps, sufixo: str = "",
+                    janela: tuple[int, int] | None = JANELA_EDITAL) -> None:
+    """Fluxo do story de edital. sufixo (ex.: '-tarde') separa prefixo de hospedagem e arquivo de ensaio.
+    janela=None quando quem chama ja conferiu o horario."""
     cfg = deps.config()
     agora_utc = agora(agora_utc)
+    if janela and fora_da_janela(deps, cfg, agora_utc, janela, "story_edital"):
+        return
     hoje, ontem = hoje_brasilia(agora_utc), ontem_brasilia(agora_utc)
     marca = f"{hoje}-edital{sufixo}"
     if not cfg.ensaio:

@@ -3,14 +3,17 @@ import sys
 from datetime import datetime
 
 from licittax.datas import eh_dia_de_post, hoje_brasilia
-from licittax.jobs.comum import (Deps, agora, dica_de_hoje, etapa, executar, ja_feito_hoje,
-                                  registrar_publicacao)
+from licittax.jobs.comum import (JANELA_POST, Deps, agora, dica_de_hoje, etapa, executar, fora_da_janela,
+                                  ja_feito_hoje, registrar_publicacao)
 from licittax.legenda import montar_legenda
 
 
 def _rodar(agora_utc: datetime | None, deps: Deps) -> None:
     cfg = deps.config()
-    hoje = hoje_brasilia(agora(agora_utc))
+    agora_utc = agora(agora_utc)
+    if fora_da_janela(deps, cfg, agora_utc, JANELA_POST, "post_dica"):
+        return
+    hoje = hoje_brasilia(agora_utc)
     if not eh_dia_de_post(hoje, cfg.inicio_rotacao):
         print("Hoje não é dia de post.")
         return

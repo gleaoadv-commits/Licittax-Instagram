@@ -18,8 +18,10 @@ CFG = Config(
     modalidades=(6,), modo_disputa_dispensa=4, dias_uteis_minimos=5,
     inicio_rotacao=date(2026, 11, 20), graph_versao="v23.0", hashtags=("#a",), ensaio=False,
 )
-ENV = {"IG_USER_ID": "1", "IG_TOKEN": "t", "GITHUB_REPOSITORY": "o/r",
-       "META_APP_ID": "a", "META_APP_SECRET": "s"}
+ENV_SEM_FORCAR = {"IG_USER_ID": "1", "IG_TOKEN": "t", "GITHUB_REPOSITORY": "o/r",
+                  "META_APP_ID": "a", "META_APP_SECRET": "s"}
+# a maioria dos testes usa horarios fixos; FORCAR=1 ignora a janela de horario (testada a parte)
+ENV = {**ENV_SEM_FORCAR, "FORCAR": "1"}
 AGORA = datetime(2026, 11, 20, 12, tzinfo=timezone.utc)
 EDITAL = Edital("NC1", "1", 2026, 1, "O", "SP", "M", "Objeto longo", 6, None, 10.0, None)
 
@@ -266,3 +268,42 @@ def test_story_da_tarde_nao_confunde_com_edital_da_manha(tmp_path):
     assert story_edital.main(amanha, deps) == 0
     assert story_dica.main(amanha + timedelta(hours=9), deps) == 0
     assert len(ig.stories) == 2
+
+
+def _br(h, m=0, dia=22):
+    return datetime(2026, 11, dia, h, m, tzinfo=timezone.utc) + timedelta(hours=3)  # Brasilia = UTC-3
+
+
+def test_disparo_atrasado_de_madrugada_nao_publica(tmp_path):
+    # caso real de 22/11: o story da tarde de 21/11 disparou as 03h29 de 22/11
+    deps, ig, _ = fazer(tmp_path, env=ENV_SEM_FORCAR)
+    assert story_dica.main(_br(3, 29), deps) == 0
+    assert story_edital.main(_br(3, 29), deps) == 0
+    assert not ig.stories
+    assert not (tmp_path / "data" / "estado.json").exists()
+
+
+def test_janelas_de_horario(tmp_path):
+    _banco(tmp_path)
+    deps, ig, _ = fazer(tmp_path, env=ENV_SEM_FORCAR)
+    # inicio da rotacao nos testes e 20/11, entao 22/11 e dia de post
+    assert post_dica.main(_br(11, 59, dia=22), deps) == 0 and not ig.carrosseis
+    assert post_dica.main(_br(12, 13, dia=22), deps) == 0 and len(ig.carrosseis) == 1
+    assert story_edital.main(_br(8, 59), deps) == 0 and not ig.stories
+    assert story_edital.main(_br(9, 17), deps) == 0 and len(ig.stories) == 1
+    assert story_dica.main(_br(17, 59), deps) == 0 and len(ig.stories) == 1
+    assert story_dica.main(_br(18, 7), deps) == 0 and len(ig.stories) == 2
+
+
+def test_story_da_tarde_ate_22h59(tmp_path):
+    deps, ig, _ = fazer(tmp_path, env=ENV_SEM_FORCAR)
+    assert story_dica.main(_br(23, 0, dia=21), deps) == 0  # 21/11 nao e dia de post (2o edital)
+    assert not ig.stories
+    assert story_dica.main(_br(22, 59, dia=21), deps) == 0
+    assert len(ig.stories) == 1
+
+
+def test_ensaio_ignora_janela(tmp_path):
+    deps, _, _ = fazer(tmp_path, cfg=replace(CFG, ensaio=True), env={})
+    assert story_edital.main(_br(3), deps) == 0
+    assert (tmp_path / "saida" / "a.jpg").exists()
